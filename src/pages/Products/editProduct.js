@@ -125,17 +125,17 @@ const EditUpload = () => {
         
         setCatData(context.catData)
         setSubCatData(context.subCatData);
-        fetchDataFromApi("/api/imageUpload").then((res) => {
-            res?.map((item) => {
-                item?.images?.map((img) => {
-                    deleteImages(`/api/category/deleteImage?img=${img}`).then((res) => {
-                        deleteData("/api/imageUpload/deleteAllImages");
-                    })
-                })
-            })
-        })
+        //fetchDataFromApi("/api/imageUpload").then((res) => {
+        //    res?.map((item) => {
+        //        item?.images?.map((img) => {
+        //            deleteImages(`/api/category/deleteImage?img=${img}`).then((res) => {
+        //                deleteData("/api/imageUpload/deleteAllImages");
+        //            })
+        //        })
+        //    })
+        //})
 
-        fetchDataFromApi(`/api/products/${id}`).then((res) => {
+        fetchDataFromApi(`/api/products/id/${id}`).then((res) => {
             console.log(res)
             setProducts(res);
             setFormFields({
@@ -175,14 +175,14 @@ const EditUpload = () => {
 
 
 
-        fetchDataFromApi("/api/productWeight").then((res) => {
-            setProductWEIGHTData(res);
+        fetchDataFromApi("/api/products/weight").then((res) => {
+            setProductWEIGHTData(res || []);
         });
-        fetchDataFromApi("/api/productRAMS").then((res) => {
-            setProductRAMSData(res);
+        fetchDataFromApi("/api/products/rams").then((res) => {
+            setProductRAMSData(res || []);
         });
-        fetchDataFromApi("/api/productSIZE").then((res) => {
-            setProductSIZEData(res);
+        fetchDataFromApi("/api/products/size").then((res) => {
+            setProductSIZEData(res || []);
         });
 
 
@@ -341,25 +341,30 @@ const EditUpload = () => {
 
 
         uploadImage(apiEndPoint, formdata).then((res) => {
-            fetchDataFromApi("/api/imageUpload").then((response) => {
+            fetchDataFromApi("/api/image-upload").then((response) => {
                 if (response !== undefined && response !== null && response !== "" && response.length !== 0) {
 
-                    response.length !== 0 && response.map((item) => {
-                        item?.images.length !== 0 && item?.images?.map((img) => {
-                            img_arr.push(img)
-
-                            //console.log(img)
-                        })
-                    })
-
-
-                    uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
-
-                    const appendedArray = [...previews, ...uniqueArray];
+                    //response.length !== 0 && response.map((item) => {
+                    //    item?.images.length !== 0 && item?.images?.map((img) => {
+                    //        img_arr.push(img)
+                    //
+                    //        //console.log(img)
+                    //    })
+                    //})
 
 
+                    //uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
 
-                    setPreviews(appendedArray);
+                    //const appendedArray = [...previews, ...uniqueArray];
+
+                    //setPreviews(appendedArray);
+
+                    let _images = []
+                    for (const file of e.target.files) {
+                        _images.push(URL.createObjectURL(file))
+                    }
+                    let uniqueArray = _images.filter((item, index) => _images.indexOf(item) === index);
+                    setPreviews([...previews, ...uniqueArray])
 
                     setTimeout(() => {
                         setUploading(false);
@@ -386,18 +391,21 @@ const EditUpload = () => {
 
         const imgIndex = previews.indexOf(imgUrl);
 
-        deleteImages(`/api/category/deleteImage?img=${imgUrl}`).then((res) => {
-            context.setAlertBox({
-                open: true,
-                error: false,
-                msg: "Image Deleted!"
-            })
-        })
+        //deleteImages(`/api/image-upload?image=${imgUrl}`).then((res) => {
+        //    context.setAlertBox({
+        //        open: true,
+        //        error: false,
+        //        msg: "Image Deleted!"
+        //    })
+        //})
+        //
+        //if (imgIndex > -1) { // only splice array when item is found
+        //    previews.splice(index, 1); // 2nd parameter means remove one item only
+        //}
 
         if (imgIndex > -1) { // only splice array when item is found
-            previews.splice(index, 1); // 2nd parameter means remove one item only
+            setPreviews(previews.filter((_, i) => i != imgIndex))
         }
-
     }
 
 
@@ -549,7 +557,7 @@ const EditUpload = () => {
         setIsLoading(true);
 
 
-        editData(`/api/products/${id}`, formFields).then((res) => {
+        editData(`/api/products/id/${id}`, formFields).then((res) => {
             context.setAlertBox({
                 open: true,
                 msg: 'The product is updated!',

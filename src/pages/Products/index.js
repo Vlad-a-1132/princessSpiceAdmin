@@ -80,20 +80,20 @@ const Products = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         context.setProgress(40);
-        fetchDataFromApi("/api/products?page=1&perPage=8").then((res) => {
+        fetchDataFromApi("/api/products/filtred?page=1&perPage=8").then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
 
-        fetchDataFromApi("/api/products/get/count").then((res) => {
+        fetchDataFromApi("/api/products/count").then((res) => {
             setTotalProducts(res.productsCount);
         })
 
-        fetchDataFromApi("/api/category/get/count").then((res) => {
+        fetchDataFromApi("/api/category/count").then((res) => {
             setTotalCategory(res.categoryCount);
         })
 
-        fetchDataFromApi("/api/subCat/get/count").then((res) => {
+        fetchDataFromApi("/api/sub-category/count").then((res) => {
             setTotalSubCategory(res.subCatCount);
         })
         
@@ -110,7 +110,7 @@ const Products = () => {
                 msg: 'Product Deleted!'
             });
 
-            fetchDataFromApi(`/api/products?page=${page}&perPage=8`).then((res) => {
+            fetchDataFromApi(`/api/products/filtred?page=${page}&perPage=8`).then((res) => {
                 setProductList(res);
             })
             context.fetchCategory();
@@ -121,7 +121,7 @@ const Products = () => {
     const handleChange = (event, value) => {
         context.setProgress(40);
         setPage(value)
-        fetchDataFromApi(`/api/products?page=${value}&perPage=8`).then((res) => {
+        fetchDataFromApi(`/api/products/filtred?page=${value}&perPage=8`).then((res) => {
             setProductList(res);
             context.setProgress(100);
             window.scrollTo({
@@ -135,7 +135,7 @@ const Products = () => {
 
     const showPerPage = (e) => {
         setshowBy(e.target.value);
-        fetchDataFromApi(`/api/products?page=${1}&perPage=${e.target.value}`).then((res) => {
+        fetchDataFromApi(`/api/products/filtred?page=${1}&perPage=${e.target.value}`).then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
@@ -144,14 +144,14 @@ const Products = () => {
     const handleChangeCategory = (event) => {
         if (event.target.value !== "all") {
             setcategoryVal(event.target.value);
-            fetchDataFromApi(`/api/products?category=${event.target.value}`).then((res) => {
+            fetchDataFromApi(`/api/products/filtred?category=${event.target.value}`).then((res) => {
                 setProductList(res);
                 context.setProgress(100);
             })
         }
         if (event.target.value === "all") {
             setcategoryVal(event.target.value);
-            fetchDataFromApi(`/api/products?page=${1}&perPage=${8}`).then((res) => {
+            fetchDataFromApi(`/api/products/filtred?page=${1}&perPage=${8}`).then((res) => {
                 setProductList(res);
                 context.setProgress(100);
             })

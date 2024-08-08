@@ -33,7 +33,7 @@ const Login = () => {
     useEffect(() => {
         context.setisHideSidebarAndHeader(true);
 
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("access_token");
         if (token !== "" && token !== undefined && token !== null) {
             setIsLogin(true);
             history("/");
@@ -84,13 +84,13 @@ const Login = () => {
 
 
         setIsLoading(true);
-        postData("/api/user/signin", formfields).then((res) => {
+        postData("/api/auth/signin", formfields).then((res) => {
 
             try {
 
                 if (res.error !== true) {
 
-                    localStorage.setItem("token", res.token);
+                    localStorage.setItem("token", res.access_token);
 
 
                     if (res.user?.isAdmin === true) {

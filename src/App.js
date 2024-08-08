@@ -139,7 +139,7 @@ function App() {
   }
 
   const fetchSubCategory = () => {
-    fetchDataFromApi('/api/subCat').then((res) => {
+    fetchDataFromApi('/api/sub-category').then((res) => {
       setSubCatData(res);
       setProgress(100);
     })
@@ -211,7 +211,7 @@ function App() {
               <Route path="/" exact={true} element={<Dashboard />} />
               <Route path="/dashboard" exact={true} element={<Dashboard />} />
               <Route path="/login" exact={true} element={<Login />} />
-              <Route path="/signUp" exact={true} element={<SignUp />} />
+              <Route path="/signup" exact={true} element={<SignUp />} />
               <Route path="/products" exact={true} element={<Products />} />
               <Route path="/product/details/:id" exact={true} element={<ProductDetails />} />
               <Route path="/product/upload" exact={true} element={<ProductUpload />} />

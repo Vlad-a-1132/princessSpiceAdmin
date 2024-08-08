@@ -59,8 +59,8 @@ const SubCategory = () => {
     }, []);
 
     const deleteCat = (id) => {
-        deleteData(`/api/subCat/${id}`).then(res => {
-            fetchDataFromApi('/api/subCat?page=1&perPage=10').then((res) => {
+        deleteData(`/api/sub-category/${id}`).then(res => {
+            fetchDataFromApi('/api/sub-category/filtred?page=1&perPage=10').then((res) => {
                 setSubCatData(res);
             })
         })
@@ -68,7 +68,7 @@ const SubCategory = () => {
 
     const handleChange = (event, value) => {
         context.setProgress(40);
-        fetchDataFromApi(`/api/subCat?page=${value}&perPage=10`).then((res) => {
+        fetchDataFromApi(`/api/sub-category/filtred?page=${value}&perPage=10`).then((res) => {
             setSubCatData(res);
             context.setProgress(100);
         })

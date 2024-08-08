@@ -60,15 +60,15 @@ const AddCategory = () => {
 
     useEffect(()=>{
 
-        fetchDataFromApi("/api/imageUpload").then((res)=>{
-            res?.map((item)=>{
-                item?.images?.map((img)=>{
-                    deleteImages(`/api/category/deleteImage?img=${img}`).then((res) => {
-                        deleteData("/api/imageUpload/deleteAllImages");
-                    })
-                })
-            })
-        })
+        //fetchDataFromApi("/api/imageUpload").then((res)=>{
+        //    res?.map((item)=>{
+        //        item?.images?.map((img)=>{
+        //            deleteImages(`/api/category/deleteImage?img=${img}`).then((res) => {
+        //                deleteData("/api/imageUpload/deleteAllImages");
+        //            })
+        //        })
+        //    })
+        //})
 
     },[]);
 
@@ -126,21 +126,29 @@ const AddCategory = () => {
 
         uploadImage(apiEndPoint, formdata).then((res) => {
             console.log(selectedImages)
-            fetchDataFromApi("/api/imageUpload").then((response) => {
+            fetchDataFromApi("/api/image-upload").then((response) => {
                 if (response !== undefined && response !== null && response !== "" && response.length !== 0) {
 
-                    response.length !== 0 && response.map((item) => {
-                        item?.images.length !== 0 && item?.images?.map((img) => {
-                            img_arr.push(img)
-                            //console.log(img)
-                        })
-                    })
+                    //response.length !== 0 && response.map((item) => {
+                    //    item?.images.length !== 0 && item?.images?.map((img) => {
+                    //        img_arr.push(img)
+                    //        //console.log(img)
+                    //    })
+                    //})
+                    //
+                    //uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
+                    //
+                    //const appendedArray = [...previews, ...uniqueArray];
+                    //
+                    //setPreviews(appendedArray);
 
-                    uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
+                    let _images = []
+                    for (const file of e.target.files) {
+                        _images.push(URL.createObjectURL(file))
+                    }
+                    let uniqueArray = _images.filter((item, index) => _images.indexOf(item) === index);
+                    setPreviews([...previews, ...uniqueArray])
 
-                    const appendedArray = [...previews, ...uniqueArray];
-
-                    setPreviews(appendedArray);
                     setTimeout(() => {
                         setUploading(false);
                         img_arr = [];
@@ -164,17 +172,20 @@ const AddCategory = () => {
     const removeImg = async (index, imgUrl) => {
 
         const imgIndex = previews.indexOf(imgUrl);
-
-        deleteImages(`/api/category/deleteImage?img=${imgUrl}`).then((res) => {
-            context.setAlertBox({
-                open: true,
-                error: false,
-                msg: "Image Deleted!"
-            })
-        })
-
+        //
+        //deleteImages(`/api/category/deleteImage?img=${imgUrl}`).then((res) => {
+        //    context.setAlertBox({
+        //        open: true,
+        //        error: false,
+        //        msg: "Image Deleted!"
+        //    })
+        //})
+        //
+        //if (imgIndex > -1) { // only splice array when item is found
+        //    previews.splice(index, 1); // 2nd parameter means remove one item only
+        //}
         if (imgIndex > -1) { // only splice array when item is found
-            previews.splice(index, 1); // 2nd parameter means remove one item only
+            setPreviews(previews.filter((_, i) => i != imgIndex))
         }
 
     }
@@ -204,7 +215,7 @@ const AddCategory = () => {
                 context.fetchCategory();
                 context.fetchSubCategory();
 
-                deleteData("/api/imageUpload/deleteAllImages");
+                //deleteData("/api/imageUpload/deleteAllImages");
 
                 history('/category');
             });

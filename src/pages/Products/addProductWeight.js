@@ -55,7 +55,7 @@ const AddProductWeight = () => {
     }
 
     useEffect(() => {
-        fetchDataFromApi("/api/productWeight").then((res) => {
+        fetchDataFromApi("/api/products/weight").then((res) => {
             setProductWeightData(res);
         })
     }, []);
@@ -77,21 +77,21 @@ const AddProductWeight = () => {
         setIsLoading(true);
 
         if (editId === "") {
-            postData('/api/productWeight/create', formFields).then(res => {
+            postData('/api/products/weight/create', formFields).then(res => {
                 setIsLoading(false);
                 setFormFields({
                     productWeight: ""
                 });
 
 
-                fetchDataFromApi("/api/productWeight").then((res) => {
+                fetchDataFromApi("/api/products/weight").then((res) => {
                     setProductWeightData(res);
                 })
 
             });
         } else {
-            editData(`/api/productWeight/${editId}`, formFields).then((res) => {
-                fetchDataFromApi("/api/productWeight").then((res) => {
+            editData(`/api/products/weight/${editId}`, formFields).then((res) => {
+                fetchDataFromApi("/api/products/weight").then((res) => {
                     setProductWeightData(res);
                     setEditId("");
                     setIsLoading(false);
@@ -107,15 +107,15 @@ const AddProductWeight = () => {
     }
 
     const deleteItem = (id) => {
-        deleteData(`/api/productWeight/${id}`).then((res) => {
-            fetchDataFromApi("/api/productWeight").then((res) => {
+        deleteData(`/api/products/weight/id/${id}`).then((res) => {
+            fetchDataFromApi("/api/products/weight").then((res) => {
                 setProductWeightData(res);
             })
         })
     }
 
     const updateData = (id) => {
-        fetchDataFromApi(`/api/productWeight/${id}`).then((res) => {
+        fetchDataFromApi(`/api/products/weight/id/${id}`).then((res) => {
             setEditId(id);
             setFormFields({
                 productWeight: res.productWeight
