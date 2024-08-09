@@ -61,7 +61,6 @@ const MenuProps = {
 
 
 const EditUpload = () => {
-
     const [categoryVal, setcategoryVal] = useState('');
     const [subCatVal, setSubCatVal] = useState('');
 
@@ -341,27 +340,12 @@ const EditUpload = () => {
 
 
         uploadImage(apiEndPoint, formdata).then((res) => {
-            fetchDataFromApi("/api/image-upload").then((response) => {
-                if (response !== undefined && response !== null && response !== "" && response.length !== 0) {
-
-                    //response.length !== 0 && response.map((item) => {
-                    //    item?.images.length !== 0 && item?.images?.map((img) => {
-                    //        img_arr.push(img)
-                    //
-                    //        //console.log(img)
-                    //    })
-                    //})
-
-
-                    //uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
-
-                    //const appendedArray = [...previews, ...uniqueArray];
-
-                    //setPreviews(appendedArray);
+                if (response !== undefined && response !== null && response !== "") {
+                    const newImagesUrl = res.uploadedImages
 
                     let _images = []
-                    for (const file of e.target.files) {
-                        _images.push(URL.createObjectURL(file))
+                    for (const file of newImagesUrl) {
+                        _images.push(file)
                     }
                     let uniqueArray = _images.filter((item, index) => _images.indexOf(item) === index);
                     setPreviews([...previews, ...uniqueArray])
@@ -377,9 +361,6 @@ const EditUpload = () => {
                     }, 500);
 
                 }
-
-            });
-
         });
 
 
@@ -391,17 +372,13 @@ const EditUpload = () => {
 
         const imgIndex = previews.indexOf(imgUrl);
 
-        //deleteImages(`/api/image-upload?image=${imgUrl}`).then((res) => {
+        //deleteImages(`/api/image-upload/concreet/?image=${imgUrl}`).then((res) => {
         //    context.setAlertBox({
         //        open: true,
         //        error: false,
         //        msg: "Image Deleted!"
         //    })
         //})
-        //
-        //if (imgIndex > -1) { // only splice array when item is found
-        //    previews.splice(index, 1); // 2nd parameter means remove one item only
-        //}
 
         if (imgIndex > -1) { // only splice array when item is found
             setPreviews(previews.filter((_, i) => i != imgIndex))

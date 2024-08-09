@@ -62,6 +62,8 @@ const MenuProps = {
 
 const ProductUpload = () => {
 
+    const [productUploadedImages, setProductUploadedImages] = useState([])
+
     const [categoryVal, setcategoryVal] = useState('');
     const [subCatVal, setSubCatVal] = useState('');
 
@@ -288,8 +290,7 @@ const ProductUpload = () => {
 
 
 
-        uploadImage(apiEndPoint, formdata).then((res) => {
-            fetchDataFromApi("/api/image-upload").then((response) => {
+        uploadImage(apiEndPoint, formdata).then((response) => {
                 if (response !== undefined && response !== null && response !== "" && response.length !== 0) {
 
                     //response.length !== 0 && response.map((item) => {
@@ -299,7 +300,6 @@ const ProductUpload = () => {
                     //        //console.log(img)
                     //    })
                     //})
-
 
                     //uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
                     //
@@ -312,6 +312,7 @@ const ProductUpload = () => {
                         _images.push(URL.createObjectURL(file))
                     }
                     let uniqueArray = _images.filter((item, index) => _images.indexOf(item) === index);
+                    setProductUploadedImages([...productUploadedImages, ...response.uploadImages])
                     setPreviews([...previews, ...uniqueArray])
 
                     setTimeout(() => {
@@ -327,9 +328,6 @@ const ProductUpload = () => {
                 }
 
             });
-
-        });
-
 
     }
 
@@ -358,7 +356,7 @@ const ProductUpload = () => {
     const addProduct = (e) => {
         e.preventDefault();
 
-        const appendedArray = [...previews, ...uniqueArray];
+        //const appendedArray = [...previews, ...uniqueArray];
 
         img_arr = [];
 
@@ -382,7 +380,7 @@ const ProductUpload = () => {
         formdata.append('location', formFields.location);
 
 
-        formFields.images = appendedArray
+        formFields.images = productUploadedImages
 
         console.log(formFields)
 
