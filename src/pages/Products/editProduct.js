@@ -902,7 +902,7 @@ const EditUpload = () => {
                                             :
 
                                             <>
-                                                <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/category/upload')} name="images" />
+                                                <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/image-upload/upload')} name="images" />
                                                 <div className='info'>
                                                     <FaRegImages />
                                                     <h5>image upload</h5>

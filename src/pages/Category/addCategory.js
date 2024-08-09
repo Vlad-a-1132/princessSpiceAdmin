@@ -313,7 +313,7 @@ const AddCategory = () => {
                                                     :
 
                                                     <>
-                                                        <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/category/upload')} name="imagesimages" />
+                                                        <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/image-upload/upload')} name="imagesimages" />
                                                         <div className='info'>
                                                             <FaRegImages />
                                                             <h5>image upload</h5>

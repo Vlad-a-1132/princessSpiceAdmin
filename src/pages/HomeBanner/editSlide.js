@@ -144,7 +144,7 @@ const EditHomeSlide = () => {
                     let uniqueArray = _images.filter((item, index) => _images.indexOf(item) === index);
                     setPreviews([...previews, ...uniqueArray])
 
-                    setPreviews(appendedArray);
+                    //setPreviews(appendedArray);
                     setTimeout(() => {
                         setUploading(false);
                         img_arr = [];
@@ -292,7 +292,7 @@ const EditHomeSlide = () => {
                                                     :
 
                                                     <>
-                                                        <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/homeBanner/upload')} name="images" />
+                                                        <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/image-upload/upload')} name="images" />
                                                         <div className='info'>
                                                             <FaRegImages />
                                                             <h5>image upload</h5>
