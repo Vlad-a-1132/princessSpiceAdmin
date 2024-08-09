@@ -61,11 +61,12 @@ const ProductDetails = () => {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        fetchDataFromApi(`/api/products/${id}`).then((res) => {
+        fetchDataFromApi(`/api/products/id/${id}`).then((res) => {
             setProductData(res);
         })
 
-        fetchDataFromApi(`/api/productReviews?productId=${id}`).then((res) => {
+        fetchDataFromApi(`/api/products/reviews/filtred?productId=${id}`).then((res) => {
+            console.log(res)
             setreviewsData(res)
         })
 

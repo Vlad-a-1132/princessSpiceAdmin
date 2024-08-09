@@ -54,7 +54,7 @@ const EditSubCat = () => {
 
 
     useEffect(()=>{
-        fetchDataFromApi(`/api/subCat/${id}`).then((res)=>{
+        fetchDataFromApi(`/api/sub-category/id/${id}`).then((res)=>{
             setData(res);
             setcategoryVal(res.category.id);
             setFormFields(() => ({
@@ -108,7 +108,7 @@ const EditSubCat = () => {
 
 
 
-        editData(`/api/subCat/${id}`, formFields).then((res) => {
+        editData(`/api/sub-category/${id}`, formFields).then((res) => {
             setIsLoading(false);
             context.fetchCategory();
             context.fetchSubCategory();

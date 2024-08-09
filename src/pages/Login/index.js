@@ -13,8 +13,10 @@ import googleIcon from '../../assets/images/googleIcon.png';
 import { useNavigate } from 'react-router-dom';
 import { postData } from '../../utils/api';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useAuth } from '../../providers/authProvider';
 
 const Login = () => {
+    const { setToken } = useAuth()
 
     const [inputIndex, setInputIndex] = useState(null);
     const [isShowPassword, setisShowPassword] = useState(false);
@@ -35,6 +37,7 @@ const Login = () => {
 
         const token = localStorage.getItem("token");
         if (token !== "" && token !== undefined && token !== null) {
+            setToken(token)
             setIsLogin(true);
             history("/");
         }
@@ -84,13 +87,14 @@ const Login = () => {
 
 
         setIsLoading(true);
-        postData("/api/user/signin", formfields).then((res) => {
+        postData("/api/auth/signin", formfields).then((res) => {
 
             try {
 
                 if (res.error !== true) {
 
-                    localStorage.setItem("token", res.token);
+                    setToken(res.access_token)
+                    //localStorage.setItem("token", res.access_token);
 
 
                     if (res.user?.isAdmin === true) {

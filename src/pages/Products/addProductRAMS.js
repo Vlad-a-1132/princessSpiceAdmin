@@ -55,7 +55,7 @@ const AddProductRAMS = () => {
     }
 
     useEffect(() => {
-        fetchDataFromApi("/api/productRAMS").then((res) => {
+        fetchDataFromApi("/api/products/rams").then((res) => {
             setproductRamData(res);
         })
     }, []);
@@ -77,21 +77,21 @@ const AddProductRAMS = () => {
         setIsLoading(true);
 
         if (editId === "") {
-            postData('/api/productRAMS/create', formFields).then(res => {
+            postData('/api/products/rams/create', formFields).then(res => {
                 setIsLoading(false);
                 setFormFields({
                     productRam: ""
                 });
 
 
-                fetchDataFromApi("/api/productRAMS").then((res) => {
+                fetchDataFromApi("/api/products/rams").then((res) => {
                     setproductRamData(res);
                 })
 
             });
         } else {
-            editData(`/api/productRAMS/${editId}`, formFields).then((res) => {
-                fetchDataFromApi("/api/productRAMS").then((res) => {
+            editData(`/api/products/rams/${editId}`, formFields).then((res) => {
+                fetchDataFromApi("/api/products/rams").then((res) => {
                     setproductRamData(res);
                     setEditId("");
                     setIsLoading(false);
@@ -107,15 +107,15 @@ const AddProductRAMS = () => {
     }
 
     const deleteItem = (id) => {
-        deleteData(`/api/productRAMS/${id}`).then((res) => {
-            fetchDataFromApi("/api/productRAMS").then((res) => {
+        deleteData(`/api/products/rams/id/${id}`).then((res) => {
+            fetchDataFromApi("/api/products/rams").then((res) => {
                 setproductRamData(res);
             })
         })
     }
 
     const updateData = (id) => {
-        fetchDataFromApi(`/api/productRAMS/${id}`).then((res) => {
+        fetchDataFromApi(`/api/products/rams/id/${id}`).then((res) => {
             setEditId(id);
             setFormFields({
                 productRam: res.productRam

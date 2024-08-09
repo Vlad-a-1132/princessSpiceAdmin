@@ -58,15 +58,15 @@ const AddHomeSlide = () => {
 
     useEffect(()=>{
 
-        fetchDataFromApi("/api/imageUpload").then((res)=>{
-            res?.map((item)=>{
-                item?.images?.map((img)=>{
-                    deleteImages(`/api/homeBanner/deleteImage?img=${img}`).then((res) => {
-                        deleteData("/api/imageUpload/deleteAllImages");
-                    })
-                })
-            })
-        })
+        //fetchDataFromApi("/api/image-upload").then((res)=>{
+        //    res?.map((item)=>{
+        //        item?.images?.map((img)=>{
+        //            deleteImages(`/api/homeBanner/deleteImage?img=${img}`).then((res) => {
+        //                deleteData("/api/image-upload/deleteAllImages");
+        //            })
+        //        })
+        //    })
+        //})
 
     },[]);
 
@@ -115,21 +115,28 @@ const AddHomeSlide = () => {
 
         uploadImage(apiEndPoint, formdata).then((res) => {
             console.log(selectedImages)
-            fetchDataFromApi("/api/imageUpload").then((response) => {
+            fetchDataFromApi("/api/image-upload").then((response) => {
                 if (response !== undefined && response !== null && response !== "" && response.length !== 0) {
 
-                    response.length !== 0 && response.map((item) => {
-                        item?.images.length !== 0 && item?.images?.map((img) => {
-                            img_arr.push(img)
-                            //console.log(img)
-                        })
-                    })
+                    //response.length !== 0 && response.map((item) => {
+                    //    item?.images.length !== 0 && item?.images?.map((img) => {
+                    //        img_arr.push(img)
+                    //        //console.log(img)
+                    //    })
+                    //})
+                    //
+                    //uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
+                    //
+                    //const appendedArray = [...previews, ...uniqueArray];
+                    //setPreviews(_images)
 
-                    uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
+                    let _images = []
+                    for (const file of e.target.files) {
+                        _images.push(URL.createObjectURL(file))
+                    }
+                    let uniqueArray = _images.filter((item, index) => _images.indexOf(item) === index);
+                    setPreviews([...previews, ...uniqueArray])
 
-                    const appendedArray = [...previews, ...uniqueArray];
-
-                    setPreviews(appendedArray);
                     setTimeout(() => {
                         setUploading(false);
                         img_arr = [];
@@ -154,16 +161,19 @@ const AddHomeSlide = () => {
 
         const imgIndex = previews.indexOf(imgUrl);
 
-        deleteImages(`/api/homeBanner/deleteImage?img=${imgUrl}`).then((res) => {
-            context.setAlertBox({
-                open: true,
-                error: false,
-                msg: "Image Deleted!"
-            })
-        })
+        //deleteImages(`/api/homeBanner/deleteImage?img=${imgUrl}`).then((res) => {
+        //    context.setAlertBox({
+        //        open: true,
+        //        error: false,
+        //        msg: "Image Deleted!"
+        //    })
+        //})
 
+        //if (imgIndex > -1) { // only splice array when item is found
+        //    //previews.splice(index, 1); // 2nd parameter means remove one item only
+        //}
         if (imgIndex > -1) { // only splice array when item is found
-            previews.splice(index, 1); // 2nd parameter means remove one item only
+            setPreviews(previews.filter((_, i) => i != imgIndex))
         }
 
     }
@@ -183,13 +193,13 @@ const AddHomeSlide = () => {
         if (previews.length !== 0) {
             setIsLoading(true);
 
-            postData(`/api/homeBanner/create`, formFields).then((res) => {
+            postData(`/api/home-banner/create`, formFields).then((res) => {
                 // console.log(res);
                 setIsLoading(false);
                 context.fetchCategory();
                 context.fetchSubCategory();
 
-                deleteData("/api/imageUpload/deleteAllImages");
+                //deleteData("/api/image-upload/deleteAllImages");
 
                 history('/homeBannerSlide/list');
             });
@@ -273,7 +283,7 @@ const AddHomeSlide = () => {
                                                     :
 
                                                     <>
-                                                        <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/homeBanner/upload')} name="images" />
+                                                        <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/image-upload/upload')} name="images" />
                                                         <div className='info'>
                                                             <FaRegImages />
                                                             <h5>image upload</h5>

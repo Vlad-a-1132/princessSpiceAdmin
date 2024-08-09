@@ -50,7 +50,7 @@ const Dashboard = () => {
     const [showBy, setshowBy] = useState(8);
     const [showBysetCatBy, setCatBy] = useState('');
     const [productList, setProductList] = useState([]);
-    const [categoryVal, setcategoryVal] = useState('all');
+    const [categoryVal, setCategoryVal] = useState('all');
 
 
     const [totalUsers, setTotalUsers] = useState();
@@ -70,22 +70,22 @@ const Dashboard = () => {
         context.setisHideSidebarAndHeader(false);
         window.scrollTo(0, 0);
         context.setProgress(40);
-        fetchDataFromApi("/api/products?page=1&perPage=8").then((res) => {
+        fetchDataFromApi("/api/products/filtred?page=1&perPage=8").then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
 
 
-        fetchDataFromApi("/api/user/get/count").then((res) => {
+        fetchDataFromApi("/api/user/count").then((res) => {
             setTotalUsers(res.userCount);
         })
 
-        fetchDataFromApi("/api/orders/get/count").then((res) => {
+        fetchDataFromApi("/api/orders/count").then((res) => {
             setTotalOrders(res.orderCount);
         })
 
         let sales = 0;
-        fetchDataFromApi("/api/orders/").then((res) => {
+        fetchDataFromApi("/api/orders").then((res) => {
             res.length !== 0 && res?.map((item) => {
                 sales += parseInt(item.amount)
             })
@@ -93,11 +93,11 @@ const Dashboard = () => {
             setTotalSales(sales)
         })
 
-        fetchDataFromApi("/api/products/get/count").then((res) => {
+        fetchDataFromApi("/api/products/count").then((res) => {
             setTotalProducts(res.productsCount);
         })
 
-        fetchDataFromApi("/api/productReviews/get/count").then((res) => {
+        fetchDataFromApi("/api/products/reviews/count").then((res) => {
             setTotalProductsReviews(res.productsReviews);
         })
 
@@ -108,14 +108,14 @@ const Dashboard = () => {
 
     const deleteProduct = (id) => {
         context.setProgress(40);
-        deleteData(`/api/products/${id}`).then((res) => {
+        deleteData(`/api/products/id/${id}`).then((res) => {
             context.setProgress(100);
             context.setAlertBox({
                 open: true,
                 error: false,
                 msg: 'Product Deleted!'
             });
-            fetchDataFromApi("/api/products?page=${1}&perPage=8").then((res) => {
+            fetchDataFromApi("/api/products/filtred?page=${1}&perPage=8").then((res) => {
                 setProductList(res);
             })
         })
@@ -124,7 +124,7 @@ const Dashboard = () => {
 
     const handleChange = (event, value) => {
         context.setProgress(40);
-        fetchDataFromApi(`/api/products?page=${value}&perPage=8`).then((res) => {
+        fetchDataFromApi(`/api/products/filtred?page=${value}&perPage=8`).then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
@@ -141,7 +141,7 @@ const Dashboard = () => {
 
     const showPerPage = (e) => {
         setshowBy(e.target.value);
-        fetchDataFromApi(`/api/products?page=${1}&perPage=${e.target.value}`).then((res) => {
+        fetchDataFromApi(`/api/products/filtred?page=${1}&perPage=${e.target.value}`).then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
@@ -149,15 +149,15 @@ const Dashboard = () => {
 
     const handleChangeCategory = (event) => {
         if (event.target.value !== "all") {
-            setcategoryVal(event.target.value);
-            fetchDataFromApi(`/api/products?category=${event.target.value}`).then((res) => {
+            setCategoryVal(event.target.value);
+            fetchDataFromApi(`/api/products/filtred?category=${event.target.value}`).then((res) => {
                 setProductList(res);
                 context.setProgress(100);
             })
         }
         if (event.target.value === "all") {
-            setcategoryVal(event.target.value);
-            fetchDataFromApi(`/api/products?page=${1}&perPage=${8}`).then((res) => {
+            setCategoryVal(event.target.value);
+            fetchDataFromApi(`/api/products/filtred?page=${1}&perPage=${8}`).then((res) => {
                 setProductList(res);
                 context.setProgress(100);
             })

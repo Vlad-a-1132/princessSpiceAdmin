@@ -77,7 +77,7 @@ const Category = () => {
 
     const handleChange = (event, value) => {
         context.setProgress(40);
-        fetchDataFromApi(`/api/category?page=${value}`).then((res) => {
+        fetchDataFromApi(`/api/category/filtred?page=${value}`).then((res) => {
             setCatData(res);
             context.setProgress(100);
         })
