@@ -124,15 +124,6 @@ const EditUpload = () => {
         
         setCatData(context.catData)
         setSubCatData(context.subCatData);
-        //fetchDataFromApi("/api/imageUpload").then((res) => {
-        //    res?.map((item) => {
-        //        item?.images?.map((img) => {
-        //            deleteImages(`/api/category/deleteImage?img=${img}`).then((res) => {
-        //                deleteData("/api/imageUpload/deleteAllImages");
-        //            })
-        //        })
-        //    })
-        //})
 
         fetchDataFromApi(`/api/products/id/${id}`).then((res) => {
             console.log(res)
@@ -339,9 +330,9 @@ const EditUpload = () => {
 
 
 
-        uploadImage(apiEndPoint, formdata).then((res) => {
+        uploadImage(apiEndPoint, formdata).then((response) => {
                 if (response !== undefined && response !== null && response !== "") {
-                    const newImagesUrl = res.uploadedImages
+                    const newImagesUrl = response.uploadedImages
 
                     let _images = []
                     for (const file of newImagesUrl) {
@@ -534,7 +525,7 @@ const EditUpload = () => {
         setIsLoading(true);
 
 
-        editData(`/api/products/id/${id}`, formFields).then((res) => {
+        editData(`/api/products/${id}`, formFields).then((res) => {
             context.setAlertBox({
                 open: true,
                 msg: 'The product is updated!',
@@ -542,7 +533,6 @@ const EditUpload = () => {
             });
 
             setIsLoading(false);
-            deleteData("/api/imageUpload/deleteAllImages");
 
             history('/products');
 

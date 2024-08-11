@@ -138,9 +138,7 @@ const EditCategory = () => {
 
 
 
-        uploadImage(apiEndPoint, formdata).then((res) => {
-
-            fetchDataFromApi("/api/image-upload").then((response) => {
+        uploadImage(apiEndPoint, formdata).then((response) => {
                 if (response !== undefined && response !== null && response !== "" && response.length !== 0) {
                     //
                     //response.length !== 0 && response.map((item) => {
@@ -176,17 +174,11 @@ const EditCategory = () => {
                     }, 500);
 
                 }
-
-            });
-
         });
-
-
     }
 
 
     const removeImg = async (index, imgUrl) => {
-
         const imgIndex = previews.indexOf(imgUrl);
 
         //deleteImages(`/api/category/deleteImage?img=${imgUrl}`).then((res) => {
@@ -232,7 +224,7 @@ const EditCategory = () => {
                 context.fetchCategory();
                 context.fetchSubCategory();
 
-                //deleteData("/api/imageUpload/deleteAllImages");
+                deleteData("/api/category/");
 
                 history('/category');
             });

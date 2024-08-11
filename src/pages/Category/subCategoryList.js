@@ -50,7 +50,7 @@ const SubCategory = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         context.setProgress(20)
-        fetchDataFromApi('/api/subCat?page=1&perPage=10').then((res) => {
+        fetchDataFromApi('/api/sub-category/filtred?page=1&perPage=10').then((res) => {
             setSubCatData(res);
             context.setProgress(100);
             console.log(setSubCatData)

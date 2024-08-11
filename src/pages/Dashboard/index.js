@@ -86,7 +86,7 @@ const Dashboard = () => {
 
         let sales = 0;
         fetchDataFromApi("/api/orders").then((res) => {
-            res.length !== 0 && res?.map((item) => {
+            res && res.length !== 0 && res?.map((item) => {
                 sales += parseInt(item.amount)
             })
 
@@ -108,7 +108,7 @@ const Dashboard = () => {
 
     const deleteProduct = (id) => {
         context.setProgress(40);
-        deleteData(`/api/products/id/${id}`).then((res) => {
+        deleteData(`/api/products/${id}`).then((res) => {
             context.setProgress(100);
             context.setAlertBox({
                 open: true,

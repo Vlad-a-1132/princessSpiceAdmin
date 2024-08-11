@@ -293,26 +293,12 @@ const ProductUpload = () => {
         uploadImage(apiEndPoint, formdata).then((response) => {
                 if (response !== undefined && response !== null && response !== "" && response.length !== 0) {
 
-                    //response.length !== 0 && response.map((item) => {
-                    //    item?.images.length !== 0 && item?.images?.map((img) => {
-                    //        img_arr.push(img)
-                    //
-                    //        //console.log(img)
-                    //    })
-                    //})
-
-                    //uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
-                    //
-                    //const appendedArray = [...previews, ...uniqueArray];
-                    //
-                    //setPreviews(appendedArray);
-
                     let _images = []
                     for (const file of e.target.files) {
                         _images.push(URL.createObjectURL(file))
                     }
                     let uniqueArray = _images.filter((item, index) => _images.indexOf(item) === index);
-                    setProductUploadedImages([...productUploadedImages, ...response.uploadImages])
+                    setProductUploadedImages([...productUploadedImages, ...response.uploadedImages])
                     setPreviews([...previews, ...uniqueArray])
 
                     setTimeout(() => {
