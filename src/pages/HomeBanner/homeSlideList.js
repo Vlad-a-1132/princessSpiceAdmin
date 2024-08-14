@@ -52,7 +52,7 @@ const HomeSlidesList = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         context.setProgress(20)
-        fetchDataFromApi('/api/homeBanner').then((res) => {
+        fetchDataFromApi('/api/home-banner').then((res) => {
             setSlideList(res);
             context.setProgress(100);
         })

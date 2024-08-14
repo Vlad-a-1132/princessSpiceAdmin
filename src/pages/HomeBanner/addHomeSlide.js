@@ -113,44 +113,28 @@ const AddHomeSlide = () => {
             console.log(error)
         }
 
-        uploadImage(apiEndPoint, formdata).then((res) => {
-            console.log(selectedImages)
-            fetchDataFromApi("/api/image-upload").then((response) => {
-                if (response !== undefined && response !== null && response !== "" && response.length !== 0) {
+        uploadImage(apiEndPoint, formdata).then((response) => {
+            if (response !== undefined && response !== null && response !== "") {
+                const uploadedImages = response.uploadedImages;
 
-                    //response.length !== 0 && response.map((item) => {
-                    //    item?.images.length !== 0 && item?.images?.map((img) => {
-                    //        img_arr.push(img)
-                    //        //console.log(img)
-                    //    })
-                    //})
-                    //
-                    //uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
-                    //
-                    //const appendedArray = [...previews, ...uniqueArray];
-                    //setPreviews(_images)
+                let _images = uploadedImages
+                //for (const file of e.target.files) {
+                //    _images.push(URL.createObjectURL(file))
+                //}
+                let uniqueArray = _images.filter((item, index) => _images.indexOf(item) === index);
+                setPreviews([...previews, ...uniqueArray])
 
-                    let _images = []
-                    for (const file of e.target.files) {
-                        _images.push(URL.createObjectURL(file))
-                    }
-                    let uniqueArray = _images.filter((item, index) => _images.indexOf(item) === index);
-                    setPreviews([...previews, ...uniqueArray])
+                setTimeout(() => {
+                    setUploading(false);
+                    img_arr = [];
+                    context.setAlertBox({
+                        open: true,
+                        error: false,
+                        msg: "Images Uploaded!"
+                    })
+                }, 200);
 
-                    setTimeout(() => {
-                        setUploading(false);
-                        img_arr = [];
-                        context.setAlertBox({
-                            open: true,
-                            error: false,
-                            msg: "Images Uploaded!"
-                        })
-                    }, 200);
-
-                }
-
-            });
-
+            }
         });
 
 
@@ -161,13 +145,13 @@ const AddHomeSlide = () => {
 
         const imgIndex = previews.indexOf(imgUrl);
 
-        //deleteImages(`/api/homeBanner/deleteImage?img=${imgUrl}`).then((res) => {
-        //    context.setAlertBox({
-        //        open: true,
-        //        error: false,
-        //        msg: "Image Deleted!"
-        //    })
-        //})
+        deleteImages(`/api/image-upload/remove-concreet?fileurl=${imgUrl}`).then((res) => {
+            context.setAlertBox({
+                open: true,
+                error: false,
+                msg: "Image Deleted!"
+            })
+        })
 
         //if (imgIndex > -1) { // only splice array when item is found
         //    //previews.splice(index, 1); // 2nd parameter means remove one item only
@@ -185,7 +169,7 @@ const AddHomeSlide = () => {
         const appendedArray = [...previews, ...uniqueArray];
 
         img_arr = [];
-       
+
         formdata.append('images', appendedArray);
 
         formFields.images = appendedArray
@@ -219,98 +203,98 @@ const AddHomeSlide = () => {
 
     return (
         <>
-            <div className="right-content w-100">
-                <div className="card shadow border-0 w-100 flex-row p-4 mt-2">
-                    <h5 className="mb-0">Add Home Slide</h5>
-                    <Breadcrumbs aria-label="breadcrumb" className="ml-auto breadcrumbs_">
-                        <StyledBreadcrumb
-                            component="a"
-                            href="#"
-                            label="Dashboard"
-                            icon={<HomeIcon fontSize="small" />}
-                        />
+        <div className="right-content w-100">
+        <div className="card shadow border-0 w-100 flex-row p-4 mt-2">
+        <h5 className="mb-0">Add Home Slide</h5>
+        <Breadcrumbs aria-label="breadcrumb" className="ml-auto breadcrumbs_">
+        <StyledBreadcrumb
+        component="a"
+        href="#"
+        label="Dashboard"
+        icon={<HomeIcon fontSize="small" />}
+        />
 
-                        <StyledBreadcrumb
-                            component="a"
-                            label="Home Slide"
-                            href="#"
-                            deleteIcon={<ExpandMoreIcon />}
-                        />
-                        <StyledBreadcrumb
-                            label="Add Home Slide"
-                            deleteIcon={<ExpandMoreIcon />}
-                        />
-                    </Breadcrumbs>
-                </div>
+        <StyledBreadcrumb
+        component="a"
+        label="Home Slide"
+        href="#"
+        deleteIcon={<ExpandMoreIcon />}
+        />
+        <StyledBreadcrumb
+        label="Add Home Slide"
+        deleteIcon={<ExpandMoreIcon />}
+        />
+        </Breadcrumbs>
+        </div>
 
-                <form className='form' onSubmit={addHomeSlide}>
-                    <div className='row'>
-                        <div className='col-sm-9'>
-                            <div className='card p-4 mt-0'>
+        <form className='form' onSubmit={addHomeSlide}>
+        <div className='row'>
+        <div className='col-sm-9'>
+        <div className='card p-4 mt-0'>
 
-                                <div className="imagesUploadSec">
-                                    <h5 class="mb-4">Media And Published</h5>
+        <div className="imagesUploadSec">
+        <h5 class="mb-4">Media And Published</h5>
 
-                                    <div className='imgUploadBox d-flex align-items-center'>
+        <div className='imgUploadBox d-flex align-items-center'>
 
-                                        {
-                                            previews?.length !== 0 && previews?.map((img, index) => {
-                                                return (
-                                                    <div className='uploadBox' key={index}>
-                                                        <span className="remove" onClick={() => removeImg(index, img)}><IoCloseSharp /></span>
-                                                        <div className='box'>
-                                                            <LazyLoadImage
-                                                                alt={"image"}
-                                                                effect="blur"
-                                                                className="w-100"
-                                                                src={img} />
-                                                        </div>
-                                                    </div>
-                                                )
-                                            })
-                                        }
-
-
-
-                                        <div className='uploadBox'>
-
-                                            {
-                                                uploading === true ?
-                                                    <div className="progressBar text-center d-flex align-items-center justify-content-center flex-column">
-                                                        <CircularProgress />
-                                                        <span>Uploading...</span>
-                                                    </div>
-                                                    :
-
-                                                    <>
-                                                        <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/image-upload/upload')} name="images" />
-                                                        <div className='info'>
-                                                            <FaRegImages />
-                                                            <h5>image upload</h5>
-                                                        </div>
-                                                    </>
-
-                                            }
-
-                                        </div>
-
-
-                                    </div>
-
-                                    <br />
-
-                                    <Button type="submit" className="btn-blue btn-lg btn-big w-100"
-                                    ><FaCloudUploadAlt /> &nbsp;  {isLoading === true ? <CircularProgress color="inherit" className="loader" /> : 'PUBLISH AND VIEW'}  </Button>
-                                </div>
-
-                            </div>
-                        </div>
-
-
+        {
+            previews?.length !== 0 && previews?.map((img, index) => {
+                return (
+                    <div className='uploadBox' key={index}>
+                    <span className="remove" onClick={() => removeImg(index, img)}><IoCloseSharp /></span>
+                    <div className='box'>
+                    <LazyLoadImage
+                    alt={"image"}
+                    effect="blur"
+                    className="w-100"
+                    src={img} />
                     </div>
-                </form>
+                    </div>
+                )
+            })
+        }
 
+
+
+        <div className='uploadBox'>
+
+        {
+            uploading === true ?
+            <div className="progressBar text-center d-flex align-items-center justify-content-center flex-column">
+            <CircularProgress />
+            <span>Uploading...</span>
             </div>
+            :
+
+            <>
+            <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/image-upload/upload')} name="images" />
+            <div className='info'>
+            <FaRegImages />
+            <h5>image upload</h5>
+            </div>
+            </>
+
+        }
+
+        </div>
+
+
+        </div>
+
+        <br />
+
+        <Button type="submit" className="btn-blue btn-lg btn-big w-100"
+        ><FaCloudUploadAlt /> &nbsp;  {isLoading === true ? <CircularProgress color="inherit" className="loader" /> : 'PUBLISH AND VIEW'}  </Button>
+        </div>
+
+        </div>
+        </div>
+
+
+        </div>
+        </form>
+
+        </div>
         </>
     )
 }

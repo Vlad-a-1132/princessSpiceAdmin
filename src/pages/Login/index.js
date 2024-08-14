@@ -96,9 +96,6 @@ const Login = () => {
                     setToken(res.access_token)
                     //localStorage.setItem("token", res.access_token);
 
-
-                    if (res.user?.isAdmin === true) {
-
                         const user = {
                             name: res.user?.name,
                             email: res.user?.email,
@@ -123,17 +120,6 @@ const Login = () => {
                         }, 2000);
 
                     }
-
-                    else{
-                        context.setAlertBox({
-                            open: true,
-                            error: true,
-                            msg: "you are not a admin"
-                        });
-                        setIsLoading(false);
-                    }
-                }
-
                 else {
                     context.setAlertBox({
                         open: true,
