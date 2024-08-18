@@ -87,7 +87,7 @@ const Login = () => {
 
 
         setIsLoading(true);
-        postData("/api/auth/signin", formfields).then((res) => {
+        postData("/api/users/auth/signin", formfields).then((res) => {
 
             try {
 

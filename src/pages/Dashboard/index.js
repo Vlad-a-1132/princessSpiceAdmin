@@ -289,7 +289,7 @@ const Dashboard = () => {
                                                                     alt={"image"}
                                                                     effect="blur"
                                                                     className="w-100"
-                                                                    src={item.images[0]} />
+                                                                    src={item.images[0].imageUrl} />
                                                             </div>
                                                         </div>
                                                         <div className="info pl-3">
@@ -301,7 +301,7 @@ const Dashboard = () => {
                                                 </td>
 
                                                 <td>{item?.category?.name}</td>
-                                                <td>{item?.subCat?.subCat}</td>
+                                                <td>{item?.subCategory?.name}</td>
                                                 <td>{item?.brand}</td>
                                                 <td>
                                                     <div style={{ width: '70px' }}>

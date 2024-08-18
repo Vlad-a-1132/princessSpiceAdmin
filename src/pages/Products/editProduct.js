@@ -85,6 +85,7 @@ const EditUpload = () => {
     const [product, setProducts] = useState([]);
 
     const [previews, setPreviews] = useState([]);
+    const [uploadedImageIds, setUploadedImageIds] = useState([]);
 
     let { id } = useParams();
 
@@ -92,22 +93,21 @@ const EditUpload = () => {
 
     const [formFields, setFormFields] = useState({
         name: '',
-        subCat: '',
         description: '',
         brand: '',
         price: null,
         oldPrice: null,
-        catName: '',
-        catId: '',
-        subCatId: '',
+        //catName: '',
+        //catId:'',
         category: '',
+        subCategory: '',
         countInStock: null,
         rating: 0,
         isFeatured: null,
-        discount: 0,
-        productRam: [],
+        discount: null,
+        rams: [],
         size: [],
-        productWeight: [],
+        weight: [],
         location:""
     })
 
@@ -126,7 +126,6 @@ const EditUpload = () => {
         setSubCatData(context.subCatData);
 
         fetchDataFromApi(`/api/products/${id}`).then((res) => {
-            console.log(res)
             setProducts(res);
             setFormFields({
                 name: res.name,
@@ -134,10 +133,8 @@ const EditUpload = () => {
                 brand: res.brand,
                 price: res.price,
                 oldPrice: res.oldPrice,
-                catName: res.catName,
                 category: res.category,
-                catId: res.catId,
-                subCat: res.subCat,
+                subCategory: res.subCategory,
                 countInStock: res.countInStock,
                 rating: res.rating,
                 isFeatured: res.isFeatured,
@@ -148,18 +145,23 @@ const EditUpload = () => {
                 location:res.location
             });
 
+            setUploadedImageIds(res.images.map((item) => {
+                return {
+                    id: item.id,
+                    url: item.imageUrl
+                }
+            }))
 
             context.setselectedCountry(res.location);
 
             setRatingValue(res.rating);
-            console.log(res)
             setcategoryVal(res.category?.id);
-            setSubCatVal(res.subCat?.id)
+            setSubCatVal(res.subCategory?.id)
             setisFeaturedValue(res.isFeatured);
             setProductRAMS(res.productRam);
             setProductSize(res.size);
             setProductWeight(res.productWeight);
-            setPreviews(res.images);
+            setPreviews(res.images.map((item) => item.imageUrl));
             context.setProgress(100);
         });
 
@@ -200,7 +202,7 @@ const EditUpload = () => {
             subCat: event.target.value
         }))
 
-        formFields.subCatId = event.target.value;
+        formFields.subCategory = event.target.value;
     };
 
 
@@ -289,30 +291,23 @@ const EditUpload = () => {
     }
 
     const selectCat = (cat, id) => {
-        formFields.catName = cat;
-        formFields.catId = id;
+        //formFields.catName = cat;
+        //formFields.catId = id;
     }
 
     let img_arr = [];
     let uniqueArray = [];
 
+    let selectedImages=[];
     const onChangeFile = async (e, apiEndPoint) => {
         try {
-
             const files = e.target.files;
             setUploading(true);
-
-            //const fd = new FormData();
             for (var i = 0; i < files.length; i++) {
-
-                // Validate file type
                 if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png' || files[i].type === 'image/webp')) {
-
                     const file = files[i];
-
+                    selectedImages.push(file)
                     formdata.append(`images`, file);
-
-
                 } else {
                     context.setAlertBox({
                         open: true,
@@ -323,57 +318,61 @@ const EditUpload = () => {
                     return false;
                 }
             }
-
+            formFields.images=selectedImages;
         } catch (error) {
-            console.log(error)
+            console.error(error)
         }
-
-
 
         uploadImage(apiEndPoint, formdata).then((response) => {
-                if (response !== undefined && response !== null && response !== "") {
-                    const newImagesUrl = response.uploadedImages
-
-                    let _images = []
-                    for (const file of newImagesUrl) {
-                        _images.push(file)
-                    }
-                    let uniqueArray = _images.filter((item, index) => _images.indexOf(item) === index);
-                    setPreviews([...previews, ...uniqueArray])
-
-                    setTimeout(() => {
-                        setUploading(false);
-                        img_arr = [];
-                        context.setAlertBox({
-                            open: true,
-                            error: false,
-                            msg: "Images Uploaded!"
-                        })
-                    }, 500);
-
+            if (response !== undefined && response !== null && response !== "") {
+                let _images = []
+                for (const image of response) {
+                    _images.push(image.imageUrl)
                 }
+
+                const newIds = response.map((item) => {
+                    return {
+                        id: item.id,
+                        url: item.imageUrl
+                    }
+                })
+
+                console.log(newIds)
+
+                setUploadedImageIds(uploadedImageIds.concat(newIds))
+
+                setPreviews([...previews, ..._images])
+
+                console.log(uploadedImageIds)
+                console.log(previews)
+
+                setTimeout(() => {
+                    setUploading(false);
+                    context.setAlertBox({
+                        open: true,
+                        error: false,
+                        msg: "Images Uploaded!"
+                    })
+                }, 200);
+            }
         });
-
-
     }
 
-
-
     const removeImg = async (index, imgUrl) => {
-
         const imgIndex = previews.indexOf(imgUrl);
 
-        //deleteImages(`/api/image-upload/concreet/?image=${imgUrl}`).then((res) => {
-        //    context.setAlertBox({
-        //        open: true,
-        //        error: false,
-        //        msg: "Image Deleted!"
-        //    })
-        //})
+        const id = uploadedImageIds.map((item) => {
+            if (item.url === imgUrl) {
+                return item.id
+            }
+        })[0]
 
-        if (imgIndex > -1) { // only splice array when item is found
-            setPreviews(previews.filter((_, i) => i != imgIndex))
-        }
+        deleteData(`/api/image-upload/${id}`).then((res) => {
+            if (imgIndex > -1) {
+                setUploadedImageIds(uploadedImageIds.filter((item) => item.id != id))
+                setPreviews(previews.filter((_, i) => i != imgIndex))
+            }
+        })
     }
 
 
@@ -393,23 +392,18 @@ const EditUpload = () => {
         formdata.append('brand', formFields.brand);
         formdata.append('price', formFields.price);
         formdata.append('oldPrice', formFields.oldPrice);
-        formdata.append('catName', formFields.catName);
-        formdata.append('catId', formFields.catId);
-        formdata.append('subCatId', formFields.subCatId);
         formdata.append('category', formFields.category);
-        formdata.append('subCat', formFields.subCat);
+        formdata.append('subCategory', formFields.subCategory);
         formdata.append('countInStock', formFields.countInStock);
         formdata.append('rating', formFields.rating);
         formdata.append('isFeatured', formFields.isFeatured);
         formdata.append('discount', formFields.discount);
-        formdata.append('productRam', formFields.productRam);
+        formdata.append('rams', formFields.rams);
         formdata.append('size', formFields.size);
-        formdata.append('productWeight', formFields.productWeight);
+        formdata.append('weight', formFields.weight);
         formdata.append('location', formFields.location);
 
-
-        formFields.images = appendedArray
-
+        formFields.images = uploadedImageIds.map((item) => item.id)
 
         if (formFields.name === "") {
             context.setAlertBox({
@@ -419,8 +413,6 @@ const EditUpload = () => {
             })
             return false;
         }
-
-
 
         if (formFields.description === "") {
             context.setAlertBox({
@@ -467,7 +459,7 @@ const EditUpload = () => {
             return false;
         }
 
-        if (formFields.subCat === "") {
+        if (formFields.subCategory === "") {
             context.setAlertBox({
                 open: true,
                 msg: 'please select sub category',
@@ -525,7 +517,7 @@ const EditUpload = () => {
         setIsLoading(true);
 
 
-        editData(`/api/products/${id}`, formFields).then((res) => {
+        editData(`/api/products/${id}/update`, formFields).then((res) => {
             context.setAlertBox({
                 open: true,
                 msg: 'The product is updated!',
@@ -535,14 +527,8 @@ const EditUpload = () => {
             setIsLoading(false);
 
             history('/products');
-
-
         })
-
-
     }
-
-
 
     return (
         <>
@@ -637,7 +623,7 @@ const EditUpload = () => {
                                                 {
                                                     context.subCatData?.subCategoryList?.length !== 0 && context.subCatData?.subCategoryList?.map((subCat, index) => {
                                                         return (
-                                                            <MenuItem className="text-capitalize" value={subCat.id} key={index}>{subCat.subCat}</MenuItem>
+                                                            <MenuItem className="text-capitalize" value={subCat._id} key={index}>{subCat.name}</MenuItem>
                                                         )
                                                     })
                                                 }

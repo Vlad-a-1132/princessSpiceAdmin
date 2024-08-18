@@ -5,7 +5,7 @@ export const fetchDataFromApi = async (url) => {
         const response = await axios.get(process.env.REACT_APP_BASE_URL + url)
         return response.data;
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return error;
     }
 }

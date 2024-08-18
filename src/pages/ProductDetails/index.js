@@ -106,7 +106,7 @@ const ProductDetails = () => {
                         <div className='col-md-5'>
                             <div className="sliderWrapper pt-3 pb-3 pl-4 pr-4">
                                 <h6 className="mb-4">Product Gallery</h6>
-                                <ProductZoom images={productData?.images.map((img) => img.imageUrl)} discount={productData?.discount} />
+                                <ProductZoom images={productData?.images?.map((img) => img.imageUrl)} discount={productData?.discount} />
                             </div>
                         </div>
 
@@ -137,7 +137,7 @@ const ProductDetails = () => {
 
                                         <div className="col-sm-9">
 
-                                            : <span>{productData?.category.name}</span>
+                                            : <span>{productData?.category?.name}</span>
                                         </div>
                                     </div>
 

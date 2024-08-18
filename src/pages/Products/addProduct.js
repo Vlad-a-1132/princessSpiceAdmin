@@ -395,7 +395,7 @@ const ProductUpload = () => {
             return false;
         }
 
-        if (formFields.subCat === "") {
+        if (formFields.subCategory === "") {
             context.setAlertBox({
                 open: true,
                 msg: 'please select sub category',
@@ -560,7 +560,7 @@ const ProductUpload = () => {
                                                     context.subCatData?.subCategoryList?.length !== 0 && context.subCatData?.subCategoryList?.map((subCat, index) => {
                                                         return (
                                                             <MenuItem className="text-capitalize" value={subCat.id} key={index}
-                                                            >{subCat.subCat}</MenuItem>
+                                                            >{subCat.name}</MenuItem>
                                                         )
                                                     })
                                                 }
