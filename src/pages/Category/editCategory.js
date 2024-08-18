@@ -24,8 +24,8 @@ import 'react-lazy-load-image-component/src/effects/blur.css';
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
     const backgroundColor =
         theme.palette.mode === 'light'
-            ? theme.palette.grey[100]
-            : theme.palette.grey[800];
+        ? theme.palette.grey[100]
+        : theme.palette.grey[800];
     return {
         backgroundColor,
         height: theme.spacing(3),
@@ -52,7 +52,7 @@ const EditCategory = () => {
     });
 
     const [previews, setPreviews] = useState([]);
-
+    const [uploadedImageIds, setUploadedImageIds] = useState([]);
 
     const [category, setcategory] = useState([]);
 
@@ -67,19 +67,16 @@ const EditCategory = () => {
 
     useEffect(() => {
         context.setProgress(20);
-        //fetchDataFromApi("/api/image-upload").then((res)=>{
-        //    res?.map((item)=>{
-        //        item?.images?.map((img)=>{
-        //            deleteImages(`/api/category/deleteImage?img=${img}`).then((res) => {
-        //                deleteData("/api/imageUpload/deleteAllImages");
-        //            })
-        //        })
-        //    })
-        //})
-        
+
         fetchDataFromApi(`/api/category/id/${id}`).then((res) => {
             setcategory(res);
-            setPreviews(res.images);
+            setPreviews(res.images.map((item) => item.imageUrl));
+            setUploadedImageIds(res.images.map((item) => {
+                return {
+                    id: item.id,
+                    url: item.imageUrl
+                }
+            }))
             setFormFields({
                 name: res.name,
                 color: res.color
@@ -99,28 +96,16 @@ const EditCategory = () => {
     }
 
 
-    let img_arr = [];
-    let uniqueArray = [];
-
+    let selectedImages=[];
     const onChangeFile = async (e, apiEndPoint) => {
         try {
-
             const files = e.target.files;
-
-
             setUploading(true);
-
-            //const fd = new FormData();
             for (var i = 0; i < files.length; i++) {
-
-                // Validate file type
-                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
-
+                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png' || files[i].type === 'image/webp')) {
                     const file = files[i];
-
+                    selectedImages.push(file)
                     formdata.append(`images`, file);
-
-
                 } else {
                     context.setAlertBox({
                         open: true,
@@ -131,70 +116,60 @@ const EditCategory = () => {
                     return false;
                 }
             }
-
+            formFields.images=selectedImages;
         } catch (error) {
-            console.log(error)
+            console.error(error)
         }
 
-
-
         uploadImage(apiEndPoint, formdata).then((response) => {
-                if (response !== undefined && response !== null && response !== "" && response.length !== 0) {
-                    //
-                    //response.length !== 0 && response.map((item) => {
-                    //    item?.images.length !== 0 && item?.images?.map((img) => {
-                    //        img_arr.push(img)
-                    //        //console.log(img)
-                    //    })
-                    //})
-                    //
-                    //uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
-                    //
-                    //const appendedArray = [...previews, ...uniqueArray];
-                    //
-                    //console.log(appendedArray)
-
-                    //setPreviews(appendedArray);
-
-                    let _images = []
-                    for (const file of e.target.files) {
-                        _images.push(URL.createObjectURL(file))
-                    }
-                    let uniqueArray = _images.filter((item, index) => _images.indexOf(item) === index);
-                    setPreviews([...previews, ...uniqueArray])
-
-                    setTimeout(() => {
-                        setUploading(false);
-                        img_arr = [];
-                        context.setAlertBox({
-                            open: true,
-                            error: false,
-                            msg: "Images Uploaded!"
-                        })
-                    }, 500);
-
+            if (response !== undefined && response !== null && response !== "") {
+                let _images = []
+                for (const image of response) {
+                    _images.push(image.imageUrl)
                 }
+                let uniqueArray = _images.filter((item, index) => _images.indexOf(item) === index);
+
+                console.log(response)
+                const newIds = response.map((image) => {
+                    return {
+                        id: image.id,
+                        url: image.imageUrl
+                    }
+                })
+
+                setUploadedImageIds([
+                    ...uploadedImageIds,
+                    ...newIds
+                ])
+
+                setPreviews([...previews, ...uniqueArray])
+
+                setTimeout(() => {
+                    setUploading(false);
+                    context.setAlertBox({
+                        open: true,
+                        error: false,
+                        msg: "Images Uploaded!"
+                    })
+                }, 200);
+            }
         });
     }
-
 
     const removeImg = async (index, imgUrl) => {
         const imgIndex = previews.indexOf(imgUrl);
 
-        //deleteImages(`/api/category/deleteImage?img=${imgUrl}`).then((res) => {
-        //    context.setAlertBox({
-        //        open: true,
-        //        error: false,
-        //        msg: "Image Deleted!"
-        //    })
-        //})
-        //
-        //if (imgIndex > -1) { // only splice array when item is found
-        //    previews.splice(index, 1); // 2nd parameter means remove one item only
-        //}
+        const id = uploadedImageIds.filter((item) => item.url == imgUrl)[0].id
 
-        if (imgIndex > -1) { // only splice array when item is found
-            setPreviews(previews.filter((_, i) => i != imgIndex))
+        if (id) {
+            deleteData(`/api/image-upload/${id}`).then((res) => {
+                if (imgIndex > -1) {
+                    setUploadedImageIds(uploadedImageIds.filter((item) => item.id != id))
+                    setPreviews(previews.filter((_, i) => i != imgIndex))
+                }
+            })
+        } else {
+            console.error("cannot delete image")
         }
     }
 
@@ -202,29 +177,20 @@ const EditCategory = () => {
     const editCat = (e) => {
         e.preventDefault();
 
-        const appendedArray = [...previews, ...uniqueArray];
-        console.log(appendedArray)
-
-        img_arr = [];
         formdata.append('name', formFields.name);
         formdata.append('color', formFields.color);
+        formdata.append('images', previews);
 
-        formdata.append('images', appendedArray);
-
-        formFields.images = appendedArray
-
+        formFields.images = uploadedImageIds.map((item) => item.id)
 
         console.log(formdata)
         if (formFields.name !== "" && formFields.color !== "" && previews.length !== 0) {
             setIsLoading(true);
 
             editData(`/api/category/${id}`, formFields).then((res) => {
-                // console.log(res);
                 setIsLoading(false);
                 context.fetchCategory();
                 context.fetchSubCategory();
-
-                deleteData("/api/category/");
 
                 history('/category');
             });
@@ -244,113 +210,113 @@ const EditCategory = () => {
 
     return (
         <>
-            <div className="right-content w-100">
-                <div className="card shadow border-0 w-100 flex-row p-4 mt-2">
-                    <h5 className="mb-0">Edit Category</h5>
-                    <Breadcrumbs aria-label="breadcrumb" className="ml-auto breadcrumbs_">
-                        <StyledBreadcrumb
-                            component="a"
-                            href="#"
-                            label="Dashboard"
-                            icon={<HomeIcon fontSize="small" />}
-                        />
+        <div className="right-content w-100">
+        <div className="card shadow border-0 w-100 flex-row p-4 mt-2">
+        <h5 className="mb-0">Edit Category</h5>
+        <Breadcrumbs aria-label="breadcrumb" className="ml-auto breadcrumbs_">
+        <StyledBreadcrumb
+        component="a"
+        href="#"
+        label="Dashboard"
+        icon={<HomeIcon fontSize="small" />}
+        />
 
-                        <StyledBreadcrumb
-                            component="a"
-                            label="Category"
-                            href="#"
-                            deleteIcon={<ExpandMoreIcon />}
-                        />
-                        <StyledBreadcrumb
-                            label="Edit Category"
-                            deleteIcon={<ExpandMoreIcon />}
-                        />
-                    </Breadcrumbs>
-                </div>
+        <StyledBreadcrumb
+        component="a"
+        label="Category"
+        href="#"
+        deleteIcon={<ExpandMoreIcon />}
+        />
+        <StyledBreadcrumb
+        label="Edit Category"
+        deleteIcon={<ExpandMoreIcon />}
+        />
+        </Breadcrumbs>
+        </div>
 
-                <form className='form' onSubmit={editCat}>
-                    <div className='row'>
-                        <div className='col-sm-9'>
-                            <div className='card p-4 mt-0'>
+        <form className='form' onSubmit={editCat}>
+        <div className='row'>
+        <div className='col-sm-9'>
+        <div className='card p-4 mt-0'>
 
-                                <div className='form-group'>
-                                    <h6>Category Name</h6>
-                                    <input type='text' name='name' value={formFields.name} onChange={changeInput} />
-                                </div>
-
-
-
-                                <div className='form-group'>
-                                    <h6>Color</h6>
-                                    <input type='text' name='color' value={formFields.color} onChange={changeInput} />
-                                </div>
+        <div className='form-group'>
+        <h6>Category Name</h6>
+        <input type='text' name='name' value={formFields.name} onChange={changeInput} />
+        </div>
 
 
 
-                                <div className="imagesUploadSec">
-                                    <h5 class="mb-4">Media And Published</h5>
+        <div className='form-group'>
+        <h6>Color</h6>
+        <input type='text' name='color' value={formFields.color} onChange={changeInput} />
+        </div>
 
 
 
-                                    <div className='imgUploadBox d-flex align-items-center'>
-
-                                        {
-                                            previews?.length !== 0 && previews?.map((img, index) => {
-                                                return (
-                                                    <div className='uploadBox' key={index}>
-                                                        <span className="remove" onClick={() => removeImg(index, img)}><IoCloseSharp /></span>
-                                                        <div className='box'>
-                                                            <LazyLoadImage
-                                                                alt={"image"}
-                                                                effect="blur"
-                                                                className="w-100"
-                                                                src={img} />
-                                                        </div>
-                                                    </div>
-                                                )
-                                            })
-                                        }
+        <div className="imagesUploadSec">
+        <h5 class="mb-4">Media And Published</h5>
 
 
 
-                                        <div className='uploadBox'>
-                                            {
-                                                uploading === true ?
-                                                    <div className="progressBar text-center d-flex align-items-center justify-content-center flex-column">
-                                                        <CircularProgress />
-                                                        <span>Uploading...</span>
-                                                    </div>
-                                                    :
+        <div className='imgUploadBox d-flex align-items-center'>
 
-                                                    <>
-                                                        <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/image-upload/upload')} name="images" />
-                                                        <div className='info'>
-                                                            <FaRegImages />
-                                                            <h5>image upload</h5>
-                                                        </div>
-                                                    </>
-
-                                            }
-
-                                        </div>
-
-
-                                    </div>
-
-                                    <br />
-
-                                    <Button type="submit" className="btn-blue btn-lg btn-big w-100"
-                                    ><FaCloudUploadAlt /> &nbsp;  {isLoading === true ? <CircularProgress color="inherit" className="loader" /> : 'PUBLISH AND VIEW'}  </Button>
-                                </div>
-
-                            </div>
-                        </div>
-
-
+        {
+            previews?.length !== 0 && previews?.map((img, index) => {
+                return (
+                    <div className='uploadBox' key={index}>
+                    <span className="remove" onClick={() => removeImg(index, img)}><IoCloseSharp /></span>
+                    <div className='box'>
+                    <LazyLoadImage
+                    alt={"image"}
+                    effect="blur"
+                    className="w-100"
+                    src={img} />
                     </div>
-                </form>
+                    </div>
+                )
+            })
+        }
 
+
+
+        <div className='uploadBox'>
+        {
+            uploading === true ?
+            <div className="progressBar text-center d-flex align-items-center justify-content-center flex-column">
+            <CircularProgress />
+            <span>Uploading...</span>
             </div>
+            :
+
+            <>
+            <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/image-upload/upload')} name="images" />
+            <div className='info'>
+            <FaRegImages />
+            <h5>image upload</h5>
+            </div>
+            </>
+
+        }
+
+        </div>
+
+
+        </div>
+
+        <br />
+
+        <Button type="submit" className="btn-blue btn-lg btn-big w-100"
+        ><FaCloudUploadAlt /> &nbsp;  {isLoading === true ? <CircularProgress color="inherit" className="loader" /> : 'PUBLISH AND VIEW'}  </Button>
+        </div>
+
+        </div>
+        </div>
+
+
+        </div>
+        </form>
+
+        </div>
         </>
     )
 }

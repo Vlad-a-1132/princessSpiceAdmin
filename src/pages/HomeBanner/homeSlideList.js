@@ -129,7 +129,7 @@ const HomeSlidesList = () => {
                                                                     alt={"image"}
                                                                     effect="blur"
                                                                     className="w-100"
-                                                                    src={item.images[0]} />
+                                                                    src={item.images[0].imageUrl} />
                                                             </div>
                                                         </div>
                                                     </div>

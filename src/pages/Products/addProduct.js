@@ -58,8 +58,6 @@ const MenuProps = {
     },
 };
 
-
-
 const ProductUpload = () => {
 
     const [productUploadedImages, setProductUploadedImages] = useState([])
@@ -85,6 +83,7 @@ const ProductUpload = () => {
     const [uploading, setUploading] = useState(false);
 
     const [previews, setPreviews] = useState([]);
+    const [uploadedImageIds, setUploadedImageIds] = useState([]);
 
     const [isDisable, setIsDisable] = useState(true);
 
@@ -92,22 +91,21 @@ const ProductUpload = () => {
 
     const [formFields, setFormFields] = useState({
         name: '',
-        subCat: '',
         description: '',
         brand: '',
         price: null,
         oldPrice: null,
-        subCatId: '',
-        catName: '',
-        catId:'',
+        //catName: '',
+        //catId:'',
         category: '',
+        subCategory: '',
         countInStock: null,
         rating: 0,
         isFeatured: null,
         discount: null,
-        productRam: [],
+        rams: [],
         size: [],
-        productWeight: [],
+        weight: [],
         location:""
     })
 
@@ -121,26 +119,6 @@ const ProductUpload = () => {
         window.scrollTo(0, 0);
         setCatData(context.catData);
         setSubCatData(context.subCatData);
-        //fetchDataFromApi("/api/imageUpload").then((res) => {
-        //    res?.map((item) => {
-        //        item?.images?.map((img) => {
-        //            deleteImages(`/api/category/deleteImage?img=${img}`).then((res) => {
-        //                deleteData("/api/imageUpload/deleteAllImages");
-        //            })
-        //        })
-        //    })
-        //});
-
-
-        fetchDataFromApi("/api/products/weight").then((res) => {
-            setProductWEIGHTData(res);
-        });
-        fetchDataFromApi("/api/products/rams").then((res) => {
-            setProductRAMSData(res);
-        });
-        fetchDataFromApi("/api/products/size").then((res) => {
-            setProductSIZEData(res);
-        });
     }, []);
 
 
@@ -165,6 +143,7 @@ const ProductUpload = () => {
         }))
 
         formFields.subCatId = event.target.value;
+        formFields.subCategory = event.target.value;
     };
 
 
@@ -206,7 +185,7 @@ const ProductUpload = () => {
             typeof value === 'string' ? value.split(',') : value,
         );
 
-        formFields.productWeight = value;
+        formFields.weight = value;
 
     };
 
@@ -247,31 +226,24 @@ const ProductUpload = () => {
 
 
     const selectCat = (cat,id) => {
-        formFields.catName = cat;
-        formFields.catId = id;
+        //formFields.catName = cat;
+        //formFields.catId = id;
     }
 
 
     let img_arr = [];
     let uniqueArray = [];
 
+    let selectedImages=[];
     const onChangeFile = async (e, apiEndPoint) => {
         try {
-
             const files = e.target.files;
             setUploading(true);
-
-            //const fd = new FormData();
             for (var i = 0; i < files.length; i++) {
-
-                // Validate file type
                 if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png' || files[i].type === 'image/webp')) {
-
                     const file = files[i];
-
+                    selectedImages.push(file)
                     formdata.append(`images`, file);
-
-
                 } else {
                     context.setAlertBox({
                         open: true,
@@ -279,63 +251,63 @@ const ProductUpload = () => {
                         msg: 'Please select a valid JPG or PNG image file.'
                     });
 
-                    setUploading(false);
                     return false;
                 }
             }
-
+            formFields.images=selectedImages;
         } catch (error) {
-            console.log(error)
+            console.error(error)
         }
-
-
 
         uploadImage(apiEndPoint, formdata).then((response) => {
-                if (response !== undefined && response !== null && response !== "" && response.length !== 0) {
-
-                    let _images = []
-                    for (const file of e.target.files) {
-                        _images.push(URL.createObjectURL(file))
-                    }
-                    let uniqueArray = _images.filter((item, index) => _images.indexOf(item) === index);
-                    setProductUploadedImages([...productUploadedImages, ...response.uploadedImages])
-                    setPreviews([...previews, ...uniqueArray])
-
-                    setTimeout(() => {
-                        setUploading(false);
-                        img_arr = [];
-                        context.setAlertBox({
-                            open: true,
-                            error: false,
-                            msg: "Images Uploaded!"
-                        })
-                    }, 500);
-
+            if (response !== undefined && response !== null && response !== "") {
+                let _images = []
+                for (const image of response) {
+                    _images.push(image.imageUrl)
                 }
+                let uniqueArray = _images.filter((item, index) => _images.indexOf(item) === index);
 
-            });
+                const newIds = response.map((image) => {
+                    return {
+                        id: image.id,
+                        url: image.imageUrl
+                    }
+                })
 
+                setUploadedImageIds([
+                    ...uploadedImageIds,
+                    ...newIds
+                ])
+
+                setPreviews([...previews, ...uniqueArray])
+
+                setTimeout(() => {
+                    setUploading(false);
+                    context.setAlertBox({
+                        open: true,
+                        error: false,
+                        msg: "Images Uploaded!"
+                    })
+                }, 200);
+            }
+        });
     }
 
-
-
     const removeImg = async (index, imgUrl) => {
-
         const imgIndex = previews.indexOf(imgUrl);
 
-        // TODO
-        //deleteImages(`/api/image-upload/delete-concreet?img=${imgUrl}`).then((res) => {
-        //    context.setAlertBox({
-        //        open: true,
-        //        error: false,
-        //        msg: "Image Deleted!"
-        //    })
-        //})
+        const id = uploadedImageIds.map((item) => {
+            if (item.url === imgUrl) {
+                return item.id
+            }
+        })[0]
 
-        if (imgIndex > -1) { // only splice array when item is found
-            setPreviews(previews.filter((_, i) => i != imgIndex))
-        }
-
+        deleteData(`/api/image-upload/${id}`).then((res) => {
+            if (imgIndex > -1) {
+                setUploadedImageIds(uploadedImageIds.filter((item) => item.id != id))
+                setPreviews(previews.filter((_, i) => i != imgIndex))
+            }
+        })
     }
 
 
@@ -351,22 +323,18 @@ const ProductUpload = () => {
         formdata.append('brand', formFields.brand);
         formdata.append('price', formFields.price);
         formdata.append('oldPrice', formFields.oldPrice);
-        formdata.append('subCatId', formFields.subCatId);
-        formdata.append('catId', formFields.catId);
-        formdata.append('catName', formFields.catName);
         formdata.append('category', formFields.category);
-        formdata.append('subCat', formFields.subCat);
+        formdata.append('subCategory', formFields.subCategory);
         formdata.append('countInStock', formFields.countInStock);
         formdata.append('rating', formFields.rating);
         formdata.append('isFeatured', formFields.isFeatured);
         formdata.append('discount', formFields.discount);
-        formdata.append('productRam', formFields.productRam);
+        formdata.append('rams', formFields.rams);
         formdata.append('size', formFields.size);
-        formdata.append('productWeight', formFields.productWeight);
+        formdata.append('weight', formFields.weight);
         formdata.append('location', formFields.location);
 
-
-        formFields.images = productUploadedImages
+        formFields.images = uploadedImageIds.map((item) => item.id)
 
         console.log(formFields)
 

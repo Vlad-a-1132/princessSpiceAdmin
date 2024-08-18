@@ -77,7 +77,7 @@ const Category = () => {
 
     const handleChange = (event, value) => {
         context.setProgress(40);
-        fetchDataFromApi(`/api/category/filtred?page=${value}`).then((res) => {
+        fetchDataFromApi(`/api/category?page=${value}`).then((res) => {
             setCatData(res);
             context.setProgress(100);
         })
@@ -138,7 +138,7 @@ const Category = () => {
                                                                     alt={"image"}
                                                                     effect="blur"
                                                                     className="w-100"
-                                                                    src={item.images[0]} />
+                                                                    src={item.images[0].imageUrl} />
                                                             </div>
                                                         </div>
                                                     </div>

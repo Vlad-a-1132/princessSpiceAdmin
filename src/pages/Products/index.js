@@ -80,7 +80,7 @@ const Products = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         context.setProgress(40);
-        fetchDataFromApi("/api/products/filtred?page=1&perPage=8").then((res) => {
+        fetchDataFromApi("/api/products?page=1&perPage=8").then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
@@ -110,7 +110,7 @@ const Products = () => {
                 msg: 'Product Deleted!'
             });
 
-            fetchDataFromApi(`/api/products/filtred?page=${page}&perPage=8`).then((res) => {
+            fetchDataFromApi(`/api/products?page=${page}&perPage=8`).then((res) => {
                 setProductList(res);
             })
             context.fetchCategory();
@@ -121,7 +121,7 @@ const Products = () => {
     const handleChange = (event, value) => {
         context.setProgress(40);
         setPage(value)
-        fetchDataFromApi(`/api/products/filtred?page=${value}&perPage=8`).then((res) => {
+        fetchDataFromApi(`/api/products?page=${value}&perPage=8`).then((res) => {
             setProductList(res);
             context.setProgress(100);
             window.scrollTo({
@@ -135,7 +135,7 @@ const Products = () => {
 
     const showPerPage = (e) => {
         setshowBy(e.target.value);
-        fetchDataFromApi(`/api/products/filtred?page=${1}&perPage=${e.target.value}`).then((res) => {
+        fetchDataFromApi(`/api/products?page=${1}&perPage=${e.target.value}`).then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
@@ -144,14 +144,14 @@ const Products = () => {
     const handleChangeCategory = (event) => {
         if (event.target.value !== "all") {
             setcategoryVal(event.target.value);
-            fetchDataFromApi(`/api/products/filtred?category=${event.target.value}`).then((res) => {
+            fetchDataFromApi(`/api/products?category=${event.target.value}`).then((res) => {
                 setProductList(res);
                 context.setProgress(100);
             })
         }
         if (event.target.value === "all") {
             setcategoryVal(event.target.value);
-            fetchDataFromApi(`/api/products/filtred?page=${1}&perPage=${8}`).then((res) => {
+            fetchDataFromApi(`/api/products?page=${1}&perPage=${8}`).then((res) => {
                 setProductList(res);
                 context.setProgress(100);
             })
@@ -297,7 +297,7 @@ const Products = () => {
                                                                     alt={"image"}
                                                                     effect="blur"
                                                                     className="w-100"
-                                                                    src={item.images[0]} />
+                                                                    src={item.images[0].imageUrl} />
                                                             </div>
                                                         </div>
                                                         <div className="info pl-3">

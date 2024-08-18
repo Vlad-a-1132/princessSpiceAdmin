@@ -125,7 +125,7 @@ const EditUpload = () => {
         setCatData(context.catData)
         setSubCatData(context.subCatData);
 
-        fetchDataFromApi(`/api/products/id/${id}`).then((res) => {
+        fetchDataFromApi(`/api/products/${id}`).then((res) => {
             console.log(res)
             setProducts(res);
             setFormFields({
@@ -165,15 +165,15 @@ const EditUpload = () => {
 
 
 
-        fetchDataFromApi("/api/products/weight").then((res) => {
-            setProductWEIGHTData(res || []);
-        });
-        fetchDataFromApi("/api/products/rams").then((res) => {
-            setProductRAMSData(res || []);
-        });
-        fetchDataFromApi("/api/products/size").then((res) => {
-            setProductSIZEData(res || []);
-        });
+        //fetchDataFromApi("/api/products/weight").then((res) => {
+        //    setProductWEIGHTData(res || []);
+        //});
+        //fetchDataFromApi("/api/products/rams").then((res) => {
+        //    setProductRAMSData(res || []);
+        //});
+        //fetchDataFromApi("/api/products/size").then((res) => {
+        //    setProductSIZEData(res || []);
+        //});
 
 
     }, []);
