@@ -44,7 +44,7 @@ const AddSubCat = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [formFields, setFormFields] = useState({
         category: '',
-        name: '',
+        subCat: '',
     });
 
     const history = useNavigate();
@@ -75,7 +75,7 @@ const AddSubCat = () => {
         e.preventDefault();
         const formdata = new FormData();
         formdata.append('category', formFields.category);
-        formdata.append('name', formFields.name);
+        formdata.append('subCat', formFields.subCat);
 
         if (formFields.category === "") {
             context.setAlertBox({
@@ -167,7 +167,7 @@ const AddSubCat = () => {
                                 <div className='col'>
                                     <div className='form-group'>
                                         <h6>SUB CATEGORY</h6>
-                                        <input type='text' name="name" value={formFields.name} onChange={inputChange} />
+                                        <input type='text' name="subCat" value={formFields.subCat} onChange={inputChange} />
                                     </div>
                                 </div>
 

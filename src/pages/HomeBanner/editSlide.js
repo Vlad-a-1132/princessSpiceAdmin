@@ -50,7 +50,6 @@ const EditHomeSlide = () => {
     });
 
     const [previews, setPreviews] = useState([]);
-    const [uploadedImageIds, setUploadedImageIds] = useState([]);
 
     let { id } = useParams();
 
@@ -63,6 +62,16 @@ const EditHomeSlide = () => {
 
     useEffect(() => {
         context.setProgress(20);
+        //fetchDataFromApi("/api/imageUpload").then((res)=>{
+        //    res?.map((item)=>{
+        //        item?.images?.map((img)=>{
+        //            deleteImages(`/api/homeBanner/deleteImage?img=${img}`).then((res) => {
+        //                deleteData("/api/imageUpload/deleteAllImages");
+        //            })
+        //        })
+        //    })
+        //})
+        
         fetchDataFromApi(`/api/home-banner/id/${id}`).then((res) => {
            // setcategory(res);
             setPreviews(res.images);
@@ -74,17 +83,26 @@ const EditHomeSlide = () => {
 
     let img_arr = [];
     let uniqueArray = [];
-    let selectedImages = [];
 
     const onChangeFile = async (e, apiEndPoint) => {
         try {
+
             const files = e.target.files;
+
+
             setUploading(true);
+
+            //const fd = new FormData();
             for (var i = 0; i < files.length; i++) {
-                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png' || files[i].type === 'image/webp')) {
+
+                // Validate file type
+                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
+
                     const file = files[i];
-                    selectedImages.push(file)
+
                     formdata.append(`images`, file);
+
+
                 } else {
                     context.setAlertBox({
                         open: true,
@@ -95,60 +113,77 @@ const EditHomeSlide = () => {
                     return false;
                 }
             }
-            formFields.images=selectedImages;
+
         } catch (error) {
-            console.error(error)
+            console.log(error)
         }
 
-        uploadImage(apiEndPoint, formdata).then((response) => {
-            if (response !== undefined && response !== null && response !== "") {
-                let _images = []
-                for (const image of response) {
-                    _images.push(image.imageUrl)
-                }
-                let uniqueArray = _images.filter((item, index) => _images.indexOf(item) === index);
 
-                const newIds = response.map((image) => {
-                    return {
-                        id: image.id,
-                        url: image.imageUrl
+
+        uploadImage(apiEndPoint, formdata).then((res) => {
+
+            fetchDataFromApi("/api/image-upload").then((response) => {
+                if (response !== undefined && response !== null && response !== "" && response.length !== 0) {
+
+                    //response.length !== 0 && response.map((item) => {
+                    //    item?.images.length !== 0 && item?.images?.map((img) => {
+                    //        img_arr.push(img)
+                    //        //console.log(img)
+                    //    })
+                    //})
+                    //
+                    //uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
+                    //
+                    //const appendedArray = [...previews, ...uniqueArray];
+                    //
+                    //console.log(appendedArray)
+                    let _images = []
+                    for (const file of e.target.files) {
+                        _images.push(URL.createObjectURL(file))
                     }
-                })
+                    let uniqueArray = _images.filter((item, index) => _images.indexOf(item) === index);
+                    setPreviews([...previews, ...uniqueArray])
 
-                setUploadedImageIds([
-                    ...uploadedImageIds,
-                    ...newIds
-                ])
+                    //setPreviews(appendedArray);
+                    setTimeout(() => {
+                        setUploading(false);
+                        img_arr = [];
+                        context.setAlertBox({
+                            open: true,
+                            error: false,
+                            msg: "Images Uploaded!"
+                        })
+                    }, 500);
 
-                setPreviews([...previews, ...uniqueArray])
+                }
 
-                setTimeout(() => {
-                    setUploading(false);
-                    context.setAlertBox({
-                        open: true,
-                        error: false,
-                        msg: "Images Uploaded!"
-                    })
-                }, 200);
-            }
+            });
+
         });
+
+
     }
 
+
     const removeImg = async (index, imgUrl) => {
+
         const imgIndex = previews.indexOf(imgUrl);
+        if (imgIndex > -1) { // only splice array when item is found
+            setPreviews(previews.filter((_, i) => i != imgIndex))
+        }
 
-        const id = uploadedImageIds.map((item) => {
-            if (item.url === imgUrl) {
-                return item.id
-            }
-        })[0]
+        //deleteImages(`/api/homeBanner/deleteImage?img=${imgUrl}`).then((res) => {
+        //    context.setAlertBox({
+        //        open: true,
+        //        error: false,
+        //        msg: "Image Deleted!"
+        //    })
+        //})
+        //
+        //if (imgIndex > -1) { // only splice array when item is found
+        //    previews.splice(index, 1); // 2nd parameter means remove one item only
+        //}
 
-        deleteData(`/api/image-upload/${id}`).then((res) => {
-            if (imgIndex > -1) {
-                setUploadedImageIds(uploadedImageIds.filter((item) => item.id != id))
-                setPreviews(previews.filter((_, i) => i != imgIndex))
-            }
-        })
     }
 
 
@@ -162,7 +197,8 @@ const EditHomeSlide = () => {
         
         formdata.append('images', appendedArray);
 
-        formdata.append('images', appendedArray);
+        formFields.images = appendedArray
+
 
         console.log(formdata)
         if (formFields.name !== "" && formFields.color !== "" && previews.length !== 0) {

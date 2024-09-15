@@ -70,13 +70,13 @@ const Dashboard = () => {
         context.setisHideSidebarAndHeader(false);
         window.scrollTo(0, 0);
         context.setProgress(40);
-        fetchDataFromApi("/api/products?page=1&perPage=8").then((res) => {
+        fetchDataFromApi("/api/products/filtred?page=1&perPage=8").then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
 
 
-        fetchDataFromApi("/api/users/count").then((res) => {
+        fetchDataFromApi("/api/user/count").then((res) => {
             setTotalUsers(res.userCount);
         })
 
@@ -115,7 +115,7 @@ const Dashboard = () => {
                 error: false,
                 msg: 'Product Deleted!'
             });
-            fetchDataFromApi("/api/products?page=${1}&perPage=8").then((res) => {
+            fetchDataFromApi("/api/products/filtred?page=${1}&perPage=8").then((res) => {
                 setProductList(res);
             })
         })
@@ -124,7 +124,7 @@ const Dashboard = () => {
 
     const handleChange = (event, value) => {
         context.setProgress(40);
-        fetchDataFromApi(`/api/products?page=${value}&perPage=8`).then((res) => {
+        fetchDataFromApi(`/api/products/filtred?page=${value}&perPage=8`).then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
@@ -141,7 +141,7 @@ const Dashboard = () => {
 
     const showPerPage = (e) => {
         setshowBy(e.target.value);
-        fetchDataFromApi(`/api/products?page=${1}&perPage=${e.target.value}`).then((res) => {
+        fetchDataFromApi(`/api/products/filtred?page=${1}&perPage=${e.target.value}`).then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
@@ -150,14 +150,14 @@ const Dashboard = () => {
     const handleChangeCategory = (event) => {
         if (event.target.value !== "all") {
             setCategoryVal(event.target.value);
-            fetchDataFromApi(`/api/products?category=${event.target.value}`).then((res) => {
+            fetchDataFromApi(`/api/products/filtred?category=${event.target.value}`).then((res) => {
                 setProductList(res);
                 context.setProgress(100);
             })
         }
         if (event.target.value === "all") {
             setCategoryVal(event.target.value);
-            fetchDataFromApi(`/api/products?page=${1}&perPage=${8}`).then((res) => {
+            fetchDataFromApi(`/api/products/filtred?page=${1}&perPage=${8}`).then((res) => {
                 setProductList(res);
                 context.setProgress(100);
             })
@@ -289,7 +289,7 @@ const Dashboard = () => {
                                                                     alt={"image"}
                                                                     effect="blur"
                                                                     className="w-100"
-                                                                    src={item.images[0].imageUrl} />
+                                                                    src={item.images[0]} />
                                                             </div>
                                                         </div>
                                                         <div className="info pl-3">
@@ -301,7 +301,7 @@ const Dashboard = () => {
                                                 </td>
 
                                                 <td>{item?.category?.name}</td>
-                                                <td>{item?.subCategory?.name}</td>
+                                                <td>{item?.subCat?.subCat}</td>
                                                 <td>{item?.brand}</td>
                                                 <td>
                                                     <div style={{ width: '70px' }}>

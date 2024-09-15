@@ -48,7 +48,7 @@ const AddHomeSlide = () => {
     });
 
     const [previews, setPreviews] = useState([]);
-    const [uploadedImageIds, setUploadedImageIds] = useState([]);
+
 
     const formdata = new FormData();
 
@@ -57,6 +57,17 @@ const AddHomeSlide = () => {
     const context = useContext(MyContext);
 
     useEffect(()=>{
+
+        //fetchDataFromApi("/api/image-upload").then((res)=>{
+        //    res?.map((item)=>{
+        //        item?.images?.map((img)=>{
+        //            deleteImages(`/api/homeBanner/deleteImage?img=${img}`).then((res) => {
+        //                deleteData("/api/image-upload/deleteAllImages");
+        //            })
+        //        })
+        //    })
+        //})
+
     },[]);
 
 
@@ -67,13 +78,23 @@ const AddHomeSlide = () => {
 
     const onChangeFile = async (e, apiEndPoint) => {
         try {
+
             const files = e.target.files;
+
+            console.log(files)
             setUploading(true);
+
+            //const fd = new FormData();
             for (var i = 0; i < files.length; i++) {
+
+                // Validate file type
                 if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png' || files[i].type === 'image/webp')) {
+
                     const file = files[i];
                     selectedImages.push(file)
                     formdata.append(`images`, file);
+
+
                 } else {
                     context.setAlertBox({
                         open: true,
@@ -84,60 +105,61 @@ const AddHomeSlide = () => {
                     return false;
                 }
             }
+
+
             formFields.images=selectedImages;
+
         } catch (error) {
-            console.error(error)
+            console.log(error)
         }
 
         uploadImage(apiEndPoint, formdata).then((response) => {
             if (response !== undefined && response !== null && response !== "") {
-                let _images = []
-                for (const image of response) {
-                    _images.push(image.imageUrl)
-                }
+                const uploadedImages = response.uploadedImages;
+
+                let _images = uploadedImages
+                //for (const file of e.target.files) {
+                //    _images.push(URL.createObjectURL(file))
+                //}
                 let uniqueArray = _images.filter((item, index) => _images.indexOf(item) === index);
-
-                const newIds = response.map((image) => {
-                    return {
-                        id: image.id,
-                        url: image.imageUrl
-                    }
-                })
-
-                setUploadedImageIds([
-                    ...uploadedImageIds,
-                    ...newIds
-                ])
-
                 setPreviews([...previews, ...uniqueArray])
 
                 setTimeout(() => {
                     setUploading(false);
+                    img_arr = [];
                     context.setAlertBox({
                         open: true,
                         error: false,
                         msg: "Images Uploaded!"
                     })
                 }, 200);
+
             }
         });
+
+
     }
 
+
     const removeImg = async (index, imgUrl) => {
+
         const imgIndex = previews.indexOf(imgUrl);
 
-        const id = uploadedImageIds.map((item) => {
-            if (item.url === imgUrl) {
-                return item.id
-            }
-        })[0]
-
-        deleteData(`/api/image-upload/${id}`).then((res) => {
-            if (imgIndex > -1) {
-                setUploadedImageIds(uploadedImageIds.filter((item) => item.id != id))
-                setPreviews(previews.filter((_, i) => i != imgIndex))
-            }
+        deleteImages(`/api/image-upload/remove-concreet?fileurl=${imgUrl}`).then((res) => {
+            context.setAlertBox({
+                open: true,
+                error: false,
+                msg: "Image Deleted!"
+            })
         })
+
+        //if (imgIndex > -1) { // only splice array when item is found
+        //    //previews.splice(index, 1); // 2nd parameter means remove one item only
+        //}
+        if (imgIndex > -1) { // only splice array when item is found
+            setPreviews(previews.filter((_, i) => i != imgIndex))
+        }
+
     }
 
 
@@ -150,8 +172,7 @@ const AddHomeSlide = () => {
 
         formdata.append('images', appendedArray);
 
-        console.log(uploadedImageIds)
-        formFields.images = uploadedImageIds.map((item) => item.id)
+        formFields.images = appendedArray
 
         if (previews.length !== 0) {
             setIsLoading(true);

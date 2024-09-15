@@ -50,7 +50,7 @@ const SubCategory = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         context.setProgress(20)
-        fetchDataFromApi('/api/sub-category?page=1&perPage=10').then((res) => {
+        fetchDataFromApi('/api/sub-category/filtred?page=1&perPage=10').then((res) => {
             setSubCatData(res);
             context.setProgress(100);
             console.log(setSubCatData)
@@ -60,7 +60,7 @@ const SubCategory = () => {
 
     const deleteCat = (id) => {
         deleteData(`/api/sub-category/${id}`).then(res => {
-            fetchDataFromApi('/api/sub-category?page=1&perPage=10').then((res) => {
+            fetchDataFromApi('/api/sub-category/filtred?page=1&perPage=10').then((res) => {
                 setSubCatData(res);
             })
         })
@@ -68,7 +68,7 @@ const SubCategory = () => {
 
     const handleChange = (event, value) => {
         context.setProgress(40);
-        fetchDataFromApi(`/api/sub-category?page=${value}&perPage=10`).then((res) => {
+        fetchDataFromApi(`/api/sub-category/filtred?page=${value}&perPage=10`).then((res) => {
             setSubCatData(res);
             context.setProgress(100);
         })
@@ -127,7 +127,7 @@ const SubCategory = () => {
                                                     <div className="d-flex align-items-center " style={{ width: '150px' }}>
                                                         <div className="imgWrapper" style={{ width: '50px', flex: '0 0 50px' }}>
                                                             <div className="img card shadow m-0">
-                                                                <img src={item?.category?.images[0].imageUrl} className="w-100" />
+                                                                <img src={item?.category?.images[0]} className="w-100" />
                                                             </div>
                                                         </div>
                                                     </div>
@@ -138,7 +138,7 @@ const SubCategory = () => {
                                                 </td>
                                                 <td>
                                                     <div className="actions d-flex align-items-center">
-                                                        <Link to={`/subCategory/${item.id}`}   >                                         <Button className="success" color="success"><FaPencilAlt /></Button>
+                                                        <Link to={`/subCategory/edit/${item.id}`}   >                                         <Button className="success" color="success"><FaPencilAlt /></Button>
                                                         </Link>
 
                                                         <Button className="error" color="error" onClick={() => deleteCat(item?.id)}><MdDelete /></Button>

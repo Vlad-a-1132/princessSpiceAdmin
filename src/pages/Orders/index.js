@@ -62,15 +62,31 @@ const Orders = () => {
 
 
     const showProducts = (id) => {
-        fetchDataFromApi(`/api/orders/${id}`).then((res) => {
+        fetchDataFromApi(`/api/orders/id/${id}`).then((res) => {
             setIsOpenModal(true);
-            setproducts(res.products || []);
+            setproducts(res.products);
         })
     }
 
 
     const orderStatus = (orderStatus, id) => {
-            editData(`/api/orders/${id}/update-status?status=${orderStatus}`, {}).then((res) => {
+        fetchDataFromApi(`/api/orders/id/${id}`).then((res) => {
+
+            const order = {
+                name: res.name,
+                phoneNumber: res.phoneNumber,
+                address: res.address,
+                pincode: res.pincode,
+                amount: parseInt(res.amount),
+                paymentId: res.paymentId,
+                email: res.email,
+                userid: res.userId,
+                products: res.products,
+                status: orderStatus
+            }
+
+
+            editData(`/api/orders/${id}`, order).then((res) => {
                 fetchDataFromApi(`/api/orders`).then((res) => {
                     setOrders(res);
                     // window.scrollTo({
@@ -78,8 +94,10 @@ const Orders = () => {
                     //     behavior: 'smooth',
                     // })
                 })
-                setSingleOrder(res?.products);
             })
+
+            setSingleOrder(res.products);
+        })
     }
 
     return (
@@ -149,7 +167,7 @@ const Orders = () => {
                                                     <td>{order?.userid}</td>
                                                     <td>
                                                         {order?.status === "pending" ?
-                                                            <span className='badge badge-danger cursor' onClick={() => orderStatus("delivered", order?._id)}>{order?.status}</span> :
+                                                            <span className='badge badge-danger cursor' onClick={() => orderStatus("confirm", order?._id)}>{order?.status}</span> :
                                                             <span className='badge badge-success cursor' onClick={() => orderStatus("pending", order?._id)}>{order?.status}</span>
                                                         }
                                                     </td>

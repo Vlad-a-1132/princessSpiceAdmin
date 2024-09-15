@@ -61,11 +61,11 @@ const ProductDetails = () => {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        fetchDataFromApi(`/api/products/${id}`).then((res) => {
+        fetchDataFromApi(`/api/products/id/${id}`).then((res) => {
             setProductData(res);
         })
 
-        fetchDataFromApi(`/api/products/${id}/reviews`).then((res) => {
+        fetchDataFromApi(`/api/products/reviews/filtred?productId=${id}`).then((res) => {
             console.log(res)
             setreviewsData(res)
         })
@@ -106,7 +106,7 @@ const ProductDetails = () => {
                         <div className='col-md-5'>
                             <div className="sliderWrapper pt-3 pb-3 pl-4 pr-4">
                                 <h6 className="mb-4">Product Gallery</h6>
-                                <ProductZoom images={productData?.images?.map((img) => img.imageUrl)} discount={productData?.discount} />
+                                <ProductZoom images={productData?.images} discount={productData?.discount} />
                             </div>
                         </div>
 
@@ -137,7 +137,7 @@ const ProductDetails = () => {
 
                                         <div className="col-sm-9">
 
-                                            : <span>{productData?.category?.name}</span>
+                                            : <span>{productData?.catName}</span>
                                         </div>
                                     </div>
 
