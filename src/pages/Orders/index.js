@@ -62,7 +62,7 @@ const Orders = () => {
 
 
     const showProducts = (id) => {
-        fetchDataFromApi(`/api/orders/${id}`).then((res) => {
+        fetchDataFromApi(`/api/orders/id/${id}`).then((res) => {
             setIsOpenModal(true);
             setproducts(res.products);
         })
@@ -70,7 +70,7 @@ const Orders = () => {
 
 
     const orderStatus = (orderStatus, id) => {
-        fetchDataFromApi(`/api/orders/${id}`).then((res) => {
+        fetchDataFromApi(`/api/orders/id/${id}`).then((res) => {
 
             const order = {
                 name: res.name,

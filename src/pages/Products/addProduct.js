@@ -62,6 +62,8 @@ const MenuProps = {
 
 const ProductUpload = () => {
 
+    const [productUploadedImages, setProductUploadedImages] = useState([])
+
     const [categoryVal, setcategoryVal] = useState('');
     const [subCatVal, setSubCatVal] = useState('');
 
@@ -119,24 +121,24 @@ const ProductUpload = () => {
         window.scrollTo(0, 0);
         setCatData(context.catData);
         setSubCatData(context.subCatData);
-        fetchDataFromApi("/api/imageUpload").then((res) => {
-            res?.map((item) => {
-                item?.images?.map((img) => {
-                    deleteImages(`/api/category/deleteImage?img=${img}`).then((res) => {
-                        deleteData("/api/imageUpload/deleteAllImages");
-                    })
-                })
-            })
-        });
+        //fetchDataFromApi("/api/imageUpload").then((res) => {
+        //    res?.map((item) => {
+        //        item?.images?.map((img) => {
+        //            deleteImages(`/api/category/deleteImage?img=${img}`).then((res) => {
+        //                deleteData("/api/imageUpload/deleteAllImages");
+        //            })
+        //        })
+        //    })
+        //});
 
 
-        fetchDataFromApi("/api/productWeight").then((res) => {
+        fetchDataFromApi("/api/products/weight").then((res) => {
             setProductWEIGHTData(res);
         });
-        fetchDataFromApi("/api/productRAMS").then((res) => {
+        fetchDataFromApi("/api/products/rams").then((res) => {
             setProductRAMSData(res);
         });
-        fetchDataFromApi("/api/productSIZE").then((res) => {
+        fetchDataFromApi("/api/products/size").then((res) => {
             setProductSIZEData(res);
         });
     }, []);
@@ -288,26 +290,16 @@ const ProductUpload = () => {
 
 
 
-        uploadImage(apiEndPoint, formdata).then((res) => {
-            fetchDataFromApi("/api/imageUpload").then((response) => {
+        uploadImage(apiEndPoint, formdata).then((response) => {
                 if (response !== undefined && response !== null && response !== "" && response.length !== 0) {
 
-                    response.length !== 0 && response.map((item) => {
-                        item?.images.length !== 0 && item?.images?.map((img) => {
-                            img_arr.push(img)
-
-                            //console.log(img)
-                        })
-                    })
-
-
-                    uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
-
-                    const appendedArray = [...previews, ...uniqueArray];
-
-
-
-                    setPreviews(appendedArray);
+                    let _images = []
+                    for (const file of e.target.files) {
+                        _images.push(URL.createObjectURL(file))
+                    }
+                    let uniqueArray = _images.filter((item, index) => _images.indexOf(item) === index);
+                    setProductUploadedImages([...productUploadedImages, ...response.uploadedImages])
+                    setPreviews([...previews, ...uniqueArray])
 
                     setTimeout(() => {
                         setUploading(false);
@@ -323,9 +315,6 @@ const ProductUpload = () => {
 
             });
 
-        });
-
-
     }
 
 
@@ -334,16 +323,17 @@ const ProductUpload = () => {
 
         const imgIndex = previews.indexOf(imgUrl);
 
-        deleteImages(`/api/category/deleteImage?img=${imgUrl}`).then((res) => {
-            context.setAlertBox({
-                open: true,
-                error: false,
-                msg: "Image Deleted!"
-            })
-        })
+        // TODO
+        //deleteImages(`/api/image-upload/delete-concreet?img=${imgUrl}`).then((res) => {
+        //    context.setAlertBox({
+        //        open: true,
+        //        error: false,
+        //        msg: "Image Deleted!"
+        //    })
+        //})
 
         if (imgIndex > -1) { // only splice array when item is found
-            previews.splice(index, 1); // 2nd parameter means remove one item only
+            setPreviews(previews.filter((_, i) => i != imgIndex))
         }
 
     }
@@ -352,7 +342,7 @@ const ProductUpload = () => {
     const addProduct = (e) => {
         e.preventDefault();
 
-        const appendedArray = [...previews, ...uniqueArray];
+        //const appendedArray = [...previews, ...uniqueArray];
 
         img_arr = [];
 
@@ -376,7 +366,7 @@ const ProductUpload = () => {
         formdata.append('location', formFields.location);
 
 
-        formFields.images = appendedArray
+        formFields.images = productUploadedImages
 
         console.log(formFields)
 
@@ -502,7 +492,7 @@ const ProductUpload = () => {
             });
 
             setIsLoading(false);
-            deleteData("/api/imageUpload/deleteAllImages");
+            //deleteData("/api/image-upload/deleteAllImages");
 
             history('/products');
 
@@ -835,7 +825,7 @@ const ProductUpload = () => {
                                             :
 
                                             <>
-                                                <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/products/upload')} name="images" />
+                                                <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/image-upload/upload')} name="images" />
                                                 <div className='info'>
                                                     <FaRegImages />
                                                     <h5>image upload</h5>

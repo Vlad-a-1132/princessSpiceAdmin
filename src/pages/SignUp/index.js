@@ -117,7 +117,7 @@ const SignUp = () => {
 
             setIsLoading(true);
 
-            postData("/api/user/signup", formfields).then((res) => {
+            postData("/api/auth/signup", formfields).then((res) => {
                 console.log(res)
 
                 if (res.error !== true) {

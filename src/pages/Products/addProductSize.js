@@ -55,7 +55,7 @@ const AddProductSize = () => {
     }
 
     useEffect(() => {
-        fetchDataFromApi("/api/productSIZE").then((res) => {
+        fetchDataFromApi("/api/products/size").then((res) => {
             setProductSizeData(res);
         })
     }, []);
@@ -77,21 +77,21 @@ const AddProductSize = () => {
         setIsLoading(true);
 
         if (editId === "") {
-            postData('/api/productSIZE/create', formFields).then(res => {
+            postData('/api/products/size/create', formFields).then(res => {
                 setIsLoading(false);
                 setFormFields({
                     size: ""
                 });
 
 
-                fetchDataFromApi("/api/productSIZE").then((res) => {
+                fetchDataFromApi("/api/products/size").then((res) => {
                     setProductSizeData(res);
                 })
 
             });
         } else {
-            editData(`/api/productSIZE/${editId}`, formFields).then((res) => {
-                fetchDataFromApi("/api/productSIZE").then((res) => {
+            editData(`/api/products/size/id/${editId}`, formFields).then((res) => {
+                fetchDataFromApi("/api/products/size").then((res) => {
                     setProductSizeData(res);
                     setEditId("");
                     setIsLoading(false);
@@ -107,15 +107,15 @@ const AddProductSize = () => {
     }
 
     const deleteItem = (id) => {
-        deleteData(`/api/productSIZE/${id}`).then((res) => {
-            fetchDataFromApi("/api/productSIZE").then((res) => {
+        deleteData(`/api/products/size/id/${id}`).then((res) => {
+            fetchDataFromApi("/api/products/size").then((res) => {
                 setProductSizeData(res);
             })
         })
     }
 
     const updateData = (id) => {
-        fetchDataFromApi(`/api/productSIZE/${id}`).then((res) => {
+        fetchDataFromApi(`/api/products/size/id/${id}`).then((res) => {
             setEditId(id);
             setFormFields({
                 size: res.size

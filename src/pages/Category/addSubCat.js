@@ -97,7 +97,7 @@ const AddSubCat = () => {
 
 
 
-        postData('/api/subCat/create', formFields).then(res => {
+        postData('/api/sub-category/create', formFields).then(res => {
             setIsLoading(false);
             context.fetchCategory();
             context.fetchSubCategory();

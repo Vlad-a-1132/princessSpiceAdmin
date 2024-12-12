@@ -52,7 +52,7 @@ const HomeSlidesList = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         context.setProgress(20)
-        fetchDataFromApi('/api/homeBanner').then((res) => {
+        fetchDataFromApi('/api/home-banner').then((res) => {
             setSlideList(res);
             context.setProgress(100);
         })
@@ -61,9 +61,9 @@ const HomeSlidesList = () => {
 
     const deleteSlide = (id) => {
         context.setProgress(30);
-        deleteData(`/api/homeBanner/${id}`).then(res => {
+        deleteData(`/api/home-banner/${id}`).then(res => {
             context.setProgress(100);
-            fetchDataFromApi('/api/homeBanner').then((res) => {
+            fetchDataFromApi('/api/home-banner').then((res) => {
                 setSlideList(res);
                 context.setProgress(100);
                 context.setProgress({

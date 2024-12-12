@@ -13,8 +13,10 @@ import googleIcon from '../../assets/images/googleIcon.png';
 import { useNavigate } from 'react-router-dom';
 import { postData } from '../../utils/api';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useAuth } from '../../providers/authProvider';
 
 const Login = () => {
+    const { setToken } = useAuth()
 
     const [inputIndex, setInputIndex] = useState(null);
     const [isShowPassword, setisShowPassword] = useState(false);
@@ -35,6 +37,7 @@ const Login = () => {
 
         const token = localStorage.getItem("token");
         if (token !== "" && token !== undefined && token !== null) {
+            setToken(token)
             setIsLogin(true);
             history("/");
         }
@@ -84,16 +87,14 @@ const Login = () => {
 
 
         setIsLoading(true);
-        postData("/api/user/signin", formfields).then((res) => {
+        postData("/api/auth/signin", formfields).then((res) => {
 
             try {
 
                 if (res.error !== true) {
 
-                    localStorage.setItem("token", res.token);
-
-
-                    if (res.user?.isAdmin === true) {
+                    setToken(res.access_token)
+                    //localStorage.setItem("token", res.access_token);
 
                         const user = {
                             name: res.user?.name,
@@ -119,17 +120,6 @@ const Login = () => {
                         }, 2000);
 
                     }
-
-                    else{
-                        context.setAlertBox({
-                            open: true,
-                            error: true,
-                            msg: "you are not a admin"
-                        });
-                        setIsLoading(false);
-                    }
-                }
-
                 else {
                     context.setAlertBox({
                         open: true,

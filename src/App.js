@@ -27,6 +27,8 @@ import EditHomeBannerSlide from './pages/HomeBanner/editSlide';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
+import AuthProvider from './providers/authProvider'
+
 import LoadingBar from 'react-top-loading-bar'
 import { fetchDataFromApi } from './utils/api';
 
@@ -82,11 +84,12 @@ function App() {
 
   }, [themeMode]);
 
-
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (token !== "" && token !== undefined && token !== null) {
+
+            axios.defaults.headers.common["Authorization"] = "Bearer " + token;
       setIsLogin(true);
 
       const userData = JSON.parse(localStorage.getItem("user"));
@@ -139,7 +142,7 @@ function App() {
   }
 
   const fetchSubCategory = () => {
-    fetchDataFromApi('/api/subCat').then((res) => {
+    fetchDataFromApi('/api/sub-category').then((res) => {
       setSubCatData(res);
       setProgress(100);
     })
@@ -171,68 +174,70 @@ function App() {
 
   return (
     <BrowserRouter>
-      <MyContext.Provider value={values}>
+      <AuthProvider>
+          <MyContext.Provider value={values}>
 
-        <LoadingBar
-          color='#f11946'
-          progress={progress}
-          onLoaderFinished={() => setProgress(0)}
-          className='topLoadingBar'
-        />
+            <LoadingBar
+              color='#f11946'
+              progress={progress}
+              onLoaderFinished={() => setProgress(0)}
+              className='topLoadingBar'
+            />
 
-        <Snackbar open={alertBox.open} autoHideDuration={6000} onClose={handleClose}>
-          <Alert
-            onClose={handleClose}
-            autoHideDuration={6000}
-            severity={alertBox.error === false ? "success" : 'error'}
-            variant="filled"
-            sx={{ width: '100%' }}
-          >
-            {alertBox.msg}
-          </Alert>
-        </Snackbar>
+            <Snackbar open={alertBox.open} autoHideDuration={6000} onClose={handleClose}>
+              <Alert
+                onClose={handleClose}
+                autoHideDuration={6000}
+                severity={alertBox.error === false ? "success" : 'error'}
+                variant="filled"
+                sx={{ width: '100%' }}
+              >
+                {alertBox.msg}
+              </Alert>
+            </Snackbar>
 
 
-        {
-          isHideSidebarAndHeader !== true &&
-          <Header />
-        }
-        <div className='main d-flex'>
-          {
-            isHideSidebarAndHeader !== true &&
-            <div className={`sidebarWrapper ${isToggleSidebar === true ? 'toggle' : ''}`}>
-              <Sidebar />
+            {
+              isHideSidebarAndHeader !== true &&
+              <Header />
+            }
+            <div className='main d-flex'>
+              {
+                isHideSidebarAndHeader !== true &&
+                <div className={`sidebarWrapper ${isToggleSidebar === true ? 'toggle' : ''}`}>
+                  <Sidebar />
+                </div>
+              }
+
+
+              <div className={`content ${isHideSidebarAndHeader === true && 'full'} ${isToggleSidebar === true ? 'toggle' : ''}`}>
+                <Routes>
+                  <Route path="/" exact={true} element={<Dashboard />} />
+                  <Route path="/dashboard" exact={true} element={<Dashboard />} />
+                  <Route path="/login" exact={true} element={<Login />} />
+                  <Route path="/signup" exact={true} element={<SignUp />} />
+                  <Route path="/products" exact={true} element={<Products />} />
+                  <Route path="/product/details/:id" exact={true} element={<ProductDetails />} />
+                  <Route path="/product/upload" exact={true} element={<ProductUpload />} />
+                  <Route path="/product/edit/:id" exact={true} element={<EditProduct />} />
+                  <Route path="/category" exact={true} element={<Category />} />
+                  <Route path="/category/add" exact={true} element={<CategoryAdd />} />
+                  <Route path="/category/edit/:id" exact={true} element={<EditCategory />} />
+                  <Route path="/subCategory/" exact={true} element={<SubCatList />} />
+                  <Route path="/subCategory/add" exact={true} element={<SubCatAdd />} />
+                  <Route path="/subCategory/edit/:id" exact={true} element={<EditSubCategory />} />
+                  <Route path="/productRAMS/add" exact={true} element={<AddProductRAMS />} />
+                  <Route path="/productWEIGHT/add" exact={true} element={<ProductWeight />} />
+                  <Route path="/productSIZE/add" exact={true} element={<ProductSize />} />
+                  <Route path="/orders/" exact={true} element={<Orders />} />
+                  <Route path="/homeBannerSlide/add" exact={true} element={<AddHomeBannerSlide />} />
+                  <Route path="/homeBannerSlide/list" exact={true} element={<HomeBannerSlideList />} />
+                  <Route path="/homeBannerSlide/edit/:id" exact={true} element={<EditHomeBannerSlide />} />
+                </Routes>
+              </div>
             </div>
-          }
-
-
-          <div className={`content ${isHideSidebarAndHeader === true && 'full'} ${isToggleSidebar === true ? 'toggle' : ''}`}>
-            <Routes>
-              <Route path="/" exact={true} element={<Dashboard />} />
-              <Route path="/dashboard" exact={true} element={<Dashboard />} />
-              <Route path="/login" exact={true} element={<Login />} />
-              <Route path="/signUp" exact={true} element={<SignUp />} />
-              <Route path="/products" exact={true} element={<Products />} />
-              <Route path="/product/details/:id" exact={true} element={<ProductDetails />} />
-              <Route path="/product/upload" exact={true} element={<ProductUpload />} />
-              <Route path="/product/edit/:id" exact={true} element={<EditProduct />} />
-              <Route path="/category" exact={true} element={<Category />} />
-              <Route path="/category/add" exact={true} element={<CategoryAdd />} />
-              <Route path="/category/edit/:id" exact={true} element={<EditCategory />} />
-              <Route path="/subCategory/" exact={true} element={<SubCatList />} />
-              <Route path="/subCategory/add" exact={true} element={<SubCatAdd />} />
-              <Route path="/subCategory/edit/:id" exact={true} element={<EditSubCategory />} />
-              <Route path="/productRAMS/add" exact={true} element={<AddProductRAMS />} />
-              <Route path="/productWEIGHT/add" exact={true} element={<ProductWeight />} />
-              <Route path="/productSIZE/add" exact={true} element={<ProductSize />} />
-              <Route path="/orders/" exact={true} element={<Orders />} />
-              <Route path="/homeBannerSlide/add" exact={true} element={<AddHomeBannerSlide />} />
-              <Route path="/homeBannerSlide/list" exact={true} element={<HomeBannerSlideList />} />
-              <Route path="/homeBannerSlide/edit/:id" exact={true} element={<EditHomeBannerSlide />} />
-            </Routes>
-          </div>
-        </div>
-      </MyContext.Provider>
+          </MyContext.Provider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
